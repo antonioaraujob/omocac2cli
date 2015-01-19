@@ -111,6 +111,7 @@ void MainWindow::executeAlgorithm()
     qsrand((uint)QTime::currentTime().msec());
 
 
+    /*
     QFile file("/tmp/algorithmResult.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
     {
@@ -133,6 +134,7 @@ void MainWindow::executeAlgorithm()
     out << "Numero de encuentros por individuo en un torneo: " << QString::number(population/2) << endl;
     out << "Desviacion estandar de la mutacion gausiana: " << QString::number(standarDeviation) << endl;
     out << "Numero de APs desplegados: " << 25 << endl;
+    */
 
     // inicializar poblacion de tamano P
     simulation->initializePopulation();
@@ -158,6 +160,8 @@ void MainWindow::executeAlgorithm()
     // repetir por el numero maximo de generaciones
     do{
         qDebug("...generacion: %d", simulation->getCurrentGenerationNumber());
+
+        /*
         QFile file("/tmp/algorithmResult.txt");
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
         {
@@ -169,6 +173,7 @@ void MainWindow::executeAlgorithm()
         }
         QTextStream out(&file);
         out << endl<< "Generacion: "<< simulation->getCurrentGenerationNumber() <<"\n";
+        */
 
         // mutacion de la poblacion
         simulation->mutatePopulation();
@@ -357,7 +362,7 @@ void MainWindow::compareAlgorithmRepeated()
 
 
     QFile file("/tmp/resultadosFinalesComparacion.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text /*| QIODevice::Append*/))
     {
         //QMessageBox msg;
         //msg.setText("No se pudo abrir el archivo /tmp/resultadosFinalesComparacion.txt para escribir \nresultados de la comparacion de algoritmos.");

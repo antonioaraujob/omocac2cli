@@ -94,7 +94,7 @@ void Simulation::initializePopulation()
 {
     Individual * individuo;
 
-
+    /*
     QFile file("/tmp/algorithmResult.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
     {
@@ -105,6 +105,7 @@ void Simulation::initializePopulation()
     }
     QTextStream out(&file);
     out << endl << "Inicializacion de la poblacion." <<"\n";
+    */
 
 
     // inicializacion de la poblacion
@@ -115,7 +116,7 @@ void Simulation::initializePopulation()
         qDebug("individualId: %d", individuo->getIndividualId());
         populationList.append(individuo);
 
-        out << individuo->getIndividualAsQString() << endl;
+        //out << individuo->getIndividualAsQString() << endl;
     }
     qDebug("tamano de la poblacion: %d",populationList.count());
     //return populationList;
@@ -155,6 +156,7 @@ void Simulation::initializeNormativePhenotypicPart()
            normativePhenotipicPart->getLowerF2(), normativePhenotipicPart->getUpperF2());
 
 
+    /*
     QFile file("/tmp/algorithmResult.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
     {
@@ -171,6 +173,7 @@ void Simulation::initializeNormativePhenotypicPart()
            "| uF1: " << normativePhenotipicPart->getUpperF1() <<
            "| lF2: " << normativePhenotipicPart->getLowerF2() <<
            "| uF2: " << normativePhenotipicPart->getUpperF2() << "|" <<endl;
+    */
 
 
 }
@@ -179,6 +182,7 @@ void Simulation::initializeGrid()
 {
     nGrid = new NormativeGrid(gridSubintervalsNumber, normativePhenotipicPart);
 
+    /*
     QFile file("/tmp/algorithmResult.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
     {
@@ -190,6 +194,7 @@ void Simulation::initializeGrid()
 
     QTextStream out(&file);
     out << endl <<"Inicializacion de la rejilla." <<"\n";
+    */
 
 
 }
@@ -360,6 +365,7 @@ void Simulation::mutatePopulation()
 
     mutation->printNewPopulation();
 
+    /*
     // agregar resultados a archivo
     QFile file("/tmp/algorithmResult.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
@@ -374,12 +380,14 @@ void Simulation::mutatePopulation()
     out << endl << "Mutacion de la poblacion." <<"\n";
     out << endl;
 
+
     Individual * auxIndividual;
     for (int i=0; i<mutatedPopulationList.count(); i++)
     {
         auxIndividual = mutatedPopulationList.at(i);
         out << auxIndividual->getIndividualAsQString() << endl;
     }
+    */
 }
 
 void Simulation::selectPopulation()
@@ -397,7 +405,7 @@ void Simulation::selectPopulation()
     }
 
 
-
+    /*
     // agregar resultados a archivo
     QFile file("/tmp/algorithmResult.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
@@ -417,6 +425,7 @@ void Simulation::selectPopulation()
         auxIndividual = populationList.at(i);
         out << auxIndividual->getIndividualAsQString() << endl;
     }
+    */
 
 }
 
@@ -425,7 +434,7 @@ void Simulation::addNonDominatedIndividualsToExternalFile(QList<Individual *> nd
 {
     externalFile->addNonDominatedIndividuals(ndIndividualList, nGrid);
 
-
+    /*
     // agregar resultados a archivo
     QFile file("/tmp/algorithmResult.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
@@ -445,6 +454,7 @@ void Simulation::addNonDominatedIndividualsToExternalFile(QList<Individual *> nd
         auxIndividual = externalFile->getExternalFileList().at(i);
         out << auxIndividual->getIndividualAsQString() << endl;
     }
+    */
 
 }
 
