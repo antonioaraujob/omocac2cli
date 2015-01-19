@@ -1,0 +1,11 @@
+*.o
+*~
+moc_*
+optimizacionac
+omocac
+omocac2
+omocac2cli
+ui_*
+Makefile
+*.pro.user
+doc/
