@@ -59,6 +59,8 @@ MainWindow::MainWindow()
     else
         qDebug("NO doDirectMutation");
 
+    simulationRepetitions = settings.value("numeroDeRepeticionesDeSimulacion").toInt();
+
     qDebug("salida");
 
 
@@ -279,7 +281,7 @@ void MainWindow::compareAlgorithmRepeated()
 
 
     // ejecuciones del algoritmo original
-    for (int i=0; i<30; i++)
+    for (int i=0; i<simulationRepetitions; i++)
     {
         timer.start();
         executeAlgorithm();
@@ -296,7 +298,7 @@ void MainWindow::compareAlgorithmRepeated()
     //ui->checkBoxDirectedMutation->setChecked(true);
     doDirectedMutation = true;
 
-    for (int i=0; i<30; i++)
+    for (int i=0; i<simulationRepetitions; i++)
     {
         timer.start();
         executeAlgorithm();
@@ -352,6 +354,38 @@ void MainWindow::compareAlgorithmRepeated()
     double meanF2Modificated = getMeanOfObjectiveFunction(2, repeatedModificatedSolutionList, 2);
     qDebug("Promedio de Fo2 modificada: %s", qPrintable(QString::number(meanF2Modificated)));
     qDebug("STD de Fo2 modificada: %s", qPrintable(QString::number(getStandardDeviation(meanF2Modificated, 2, repeatedModificatedSolutionList, 2))));
+
+
+    QFile file("/tmp/resultadosFinalesComparacion.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+    {
+        //QMessageBox msg;
+        //msg.setText("No se pudo abrir el archivo /tmp/resultadosFinalesComparacion.txt para escribir \nresultados de la comparacion de algoritmos.");
+        //msg.exec();
+        qDebug("No se pudo abrir el archivo /tmp/resultadosFinalesComparacion.txt para escribir \nresultados de la comparacion de algoritmos");
+        return;
+    }
+    QTextStream out(&file);
+
+    out << "Resultados de comparacion de algoritmos" << endl;
+    out << "Promedio de tiempo de ejecución original: " << QString::number(meanExecutionTimeOriginal) << " ms, std: " <<
+           QString::number(stdExecutionTimeOriginal) << endl;
+    out << "Promedio de tiempo de ejecución modificado: " << QString::number(meanExecutionTimeModificated) << " ms, std: " <<
+           QString::number(stdExecutionTimeModificated) << endl;
+    out << endl;
+    out << "Promedio de numero de individuos no dominados algoritmo original: " << QString::number(meanNonDominatedIndividuals1) << " individuos" << endl;
+    out << "Promedio de numero de individuos no dominados algoritmo modificado: " << QString::number(meanNonDominatedIndividuals2) << " individuos" << endl;
+    out << endl;
+    out << "Promedio de Fo1 original: " << QString::number(meanF1Original) << endl;
+    out << "STD de Fo1 original: " << QString::number(getStandardDeviation(meanF1Original, 1, repeatedOriginalSolutionList, 1)) << endl;
+    out << "Promedio de Fo2 original: " << QString::number(meanF2Original) << endl;
+    out << "STD de Fo2 original: " << QString::number(getStandardDeviation(meanF2Original, 2, repeatedOriginalSolutionList, 1)) << endl;
+    out << endl;
+    out << "Promedio de Fo1 modificada: " << QString::number(meanF1Modificated) << endl;
+    out << "STD de Fo1 modificada: " << QString::number(getStandardDeviation(meanF2Original, 2, repeatedOriginalSolutionList, 1)) << endl;
+    out << "Promedio de Fo2 modificada: " << QString::number(meanF2Modificated) << endl;
+    out << "STD de Fo2 modificada: " << QString::number(getStandardDeviation(meanF2Modificated, 2, repeatedModificatedSolutionList, 2)) << endl;
+
 
 
     //---------------------------------------------------------------------------

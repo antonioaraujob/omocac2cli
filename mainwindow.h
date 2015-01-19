@@ -60,6 +60,11 @@ private:
     bool doDirectedMutation;
 
     /**
+     * @brief Numero de repeticiones para ejecutar la comparacion de algoritmos
+     */
+    int simulationRepetitions;
+
+    /**
      * @brief Objeto Simulation que abstrae todo el algoritmo cultural
      */
     Simulation * simulation;
