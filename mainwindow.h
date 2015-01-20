@@ -226,6 +226,17 @@ public:
      */
     void reportIndividualAsFile(QList<Individual*> list, QString fileName);
 
+    /**
+     * @brief Funcion para generar un archivo con los individuos de la lista pasada como
+     * argumento
+     * @param list lista de individuos para escribir en el archivo
+     * @param resultsSubdirectory cadena con la ruta absoluta del subdirectorio para almacenar los
+     * resultados
+     * @param fileName nombre del archivo que almacenara los individuos. La ruta del archivo
+     * sera: /tmp/fileName.txt
+     */
+    void reportIndividualAsFile(QList<Individual*> list, QString resultsSubdirectory, QString fileName);
+
 
     /**
      * @brief Funcion para colocar las cadenas de individuos en los listview de la
@@ -287,8 +298,14 @@ public:
     void compareAlgorithmRepeated();
 
 
-
-
+    /**
+     * @brief Funcion para crear la estructura del directorio resultados en el directorio actual del
+     * programa con subdirectorios para cada una de las ejecuciones que se realicen con el siguiente
+     * formato de nombre: dd.MM.yyyy_hh.mm.ss
+     *
+     * @return cadena con la ruta absoluta al subdirectorio donde se deben almacenar los resultados
+     */
+    QString createResultsDirectory();
 
 };
 

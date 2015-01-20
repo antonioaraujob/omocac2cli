@@ -5,6 +5,7 @@
 #include <QTextStream>
 #include <QStringListModel>
 #include <QSet>
+#include <QDir>
 
 #include "individual.h"
 #include "simulation.h"
@@ -360,8 +361,10 @@ void MainWindow::compareAlgorithmRepeated()
     qDebug("Promedio de Fo2 modificada: %s", qPrintable(QString::number(meanF2Modificated)));
     qDebug("STD de Fo2 modificada: %s", qPrintable(QString::number(getStandardDeviation(meanF2Modificated, 2, repeatedModificatedSolutionList, 2))));
 
+    // cadena con el nombre del subdirectorio que almacenara los resultados
+    QString resultsDirectory = createResultsDirectory();
 
-    QFile file("/tmp/resultadosFinalesComparacion.txt");
+    QFile file(resultsDirectory+"/resultadosFinalesComparacion.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text /*| QIODevice::Append*/))
     {
         //QMessageBox msg;
@@ -417,7 +420,7 @@ void MainWindow::compareAlgorithmRepeated()
 
 
     // escribir en un archivo los individuos del frente de pareto encontrado en un archivo
-    reportIndividualAsFile(myList,"individuosFrenteParetoOriginal");
+    reportIndividualAsFile(myList, resultsDirectory, "individuosFrenteParetoOriginal");
 
 
     // colocar las cadenas en la pestana de cadenas de la interfaz grafica
@@ -446,7 +449,7 @@ void MainWindow::compareAlgorithmRepeated()
     qSort(myList.begin(), myList.end(), xLessThanLatency);
 
     // escribir en un archivo los individuos del frente de pareto encontrado en un archivo
-    reportIndividualAsFile(myList,"individuosFrenteParetoModificado");
+    reportIndividualAsFile(myList, resultsDirectory, "individuosFrenteParetoModificado");
 
     // colocar las cadenas en la pestana de cadenas de la interfaz grafica
     //populateAListView(myList, ui->listViewPFModificated);
@@ -470,9 +473,30 @@ void MainWindow::reportIndividualAsFile(QList<Individual*> list, QString fileNam
         return;
     }
     QTextStream out(&file);
-    out << endl << "/tmp/"+fileName+".txt - Individuos encontrados luego de ejecutar el algoritmo cultural: " << "\n";
+    out << "/tmp/"+fileName+".txt - Individuos encontrados luego de ejecutar el algoritmo cultural: " << "\n";
 
-    QString aux;
+    for(int i=0; i<list.count(); i++)
+    {
+        out << list.at(i)->getIndividualAsQString() << "\n";
+    }
+}
+
+void MainWindow::reportIndividualAsFile(QList<Individual*> list, QString resultsSubdirectory, QString fileName)
+{
+    QFile file(resultsSubdirectory+"/"+fileName+".txt");
+    if (file.exists())
+    {
+        file.remove();
+    }
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+    {
+        QString msg = "No se pudo crear el archivo /tmp/"+fileName+".txt";
+        qDebug(qPrintable(msg));
+        return;
+    }
+    QTextStream out(&file);
+    //out << resultsSubdirectory +"/"+fileName+".txt - Individuos encontrados luego de ejecutar el algoritmo cultural: " << "\n";
+
     for(int i=0; i<list.count(); i++)
     {
         out << list.at(i)->getIndividualAsQString() << "\n";
@@ -714,3 +738,43 @@ QList<Individual*> MainWindow::getNonDominatedIndividualsFromList(QList<QList<In
     return individualList;
 }
 
+
+
+QString MainWindow::createResultsDirectory()
+{
+
+    QString resultsDir = QDir::currentPath() + "/resultados";
+    qDebug(qPrintable(resultsDir));
+
+    QString outputDir = resultsDir + "/" + QDateTime::currentDateTime().toString("dd.MM.yyyy_hh.mm.ss");
+    qDebug(qPrintable(outputDir));
+
+
+    QDir dir(resultsDir);
+    if (!dir.exists())
+    {
+        qDebug("no existe");
+        if (dir.mkdir(resultsDir))
+            qDebug("se acaba de crear");
+        else
+            qDebug("no se pudo crear");
+    }
+    else
+    {
+        qDebug("existe");
+    }
+
+    // crear el directorio con la fecha
+    QDir tmpDir(outputDir);
+    if (!tmpDir.exists())
+    {
+        qDebug("no existe el directorio de ejecucion");
+        if (tmpDir.mkdir(outputDir))
+            qDebug("creado el directorio de la ejecucion");
+        else
+            qDebug("fallo la creacion del directorio de ejecucion");
+
+    }
+    return outputDir;
+
+}
