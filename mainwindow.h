@@ -65,6 +65,11 @@ private:
     int simulationRepetitions;
 
     /**
+     * @brief Verdadero si se debe realizar la comparacion de los algoritmos
+     */
+    bool doComparationOfAlgorithms;
+
+    /**
      * @brief Objeto Simulation que abstrae todo el algoritmo cultural
      */
     Simulation * simulation;
@@ -306,6 +311,13 @@ public:
      * @return cadena con la ruta absoluta al subdirectorio donde se deben almacenar los resultados
      */
     QString createResultsDirectory();
+
+    /**
+     * @brief Retorna verdadero si se debe realizar la comparacion de los algoritmos de acuerdo al
+     * parametro leido del archivo de configuracion
+     * @return verdadero si se debe realizar la comparacion de algoritmos
+     */
+    bool getDoComparationOfAlgorithms();
 
 };
 

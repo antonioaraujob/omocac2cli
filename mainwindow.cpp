@@ -62,6 +62,8 @@ MainWindow::MainWindow()
 
     simulationRepetitions = settings.value("numeroDeRepeticionesDeSimulacion").toInt();
 
+    doComparationOfAlgorithms = settings.value("ejecutarComparacionDeAlgoritmos").toBool();
+
     qDebug("salida");
 
 
@@ -269,8 +271,36 @@ void MainWindow::executeAlgorithm()
     // generar el grafico
     //plotSolutions();
 
-
     //storeExecutionSolution();
+
+    // *****************************************************************************
+    if (!doComparationOfAlgorithms)
+    {
+        // escribir los resultados de la simulacion
+        QList<Individual *> finalResultsList;
+        QString outputFileName = "";
+        // cadena con el nombre del subdirectorio que almacenara los resultados
+        QString resultsDirectory = createResultsDirectory();
+
+        if (doDirectedMutation)
+        {
+            finalResultsList = modificatedAlgorithmSolutions;
+            outputFileName = "individuosFrenteParetoModificado";
+        }
+        else
+        {
+            finalResultsList = genericAlgorithmSolutions;
+            outputFileName = "individuosFrenteParetoOriginal";
+        }
+
+        // ordenar la lista en orden ascendente de acuerdo a la latencia (F2)
+        qSort(finalResultsList.begin(), finalResultsList.end(), xLessThanLatency);
+
+        // escribir en un archivo los individuos del frente de pareto encontrado en un archivo
+        reportIndividualAsFile(finalResultsList, resultsDirectory, outputFileName);
+    }
+    // *****************************************************************************
+
 
     qDebug("antes de salir executeAlgorithm");
 }
@@ -777,4 +807,10 @@ QString MainWindow::createResultsDirectory()
     }
     return outputDir;
 
+}
+
+
+bool MainWindow::getDoComparationOfAlgorithms()
+{
+    return doComparationOfAlgorithms;
 }
