@@ -21,6 +21,10 @@ inline static bool xLessThanLatency(Individual *p1, Individual *p2)
     return p1->getPerformanceLatency() < p2->getPerformanceLatency();
 }
 
+/**
+ * @brief Define e inicializa el miembro estatico individualSize
+ */
+int MainWindow::individualSize = 0;
 
 
 MainWindow::MainWindow()
@@ -62,6 +66,9 @@ MainWindow::MainWindow()
     simulationRepetitions = settings.value("numeroDeRepeticionesDeSimulacion").toInt();
 
     doComparationOfAlgorithms = settings.value("ejecutarComparacionDeAlgoritmos").toBool();
+
+    individualSize = settings.value("tamanoDeIndividuo").toInt();
+    qDebug("individualSize %s", qPrintable(QString::number(individualSize)));
 
     qDebug("salida");
 
@@ -814,4 +821,10 @@ QString MainWindow::createResultsDirectory()
 bool MainWindow::getDoComparationOfAlgorithms()
 {
     return doComparationOfAlgorithms;
+}
+
+
+int MainWindow::getIndividualSize()
+{
+    return individualSize;
 }

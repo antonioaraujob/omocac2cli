@@ -101,6 +101,10 @@ private:
      */
     QList< QList<Individual *> > repeatedModificatedSolutionList;
 
+    /**
+     * @brief Tamano del individuo con respecto a la cadena de scanning (numero de canales a escanear)
+     */
+    static int individualSize;
 
 public:
 
@@ -318,6 +322,12 @@ public:
      * @return verdadero si se debe realizar la comparacion de algoritmos
      */
     bool getDoComparationOfAlgorithms();
+
+    /**
+     * @brief Retorna el tamano del individuo con respecto a la secuencia de canales
+     * @return tamano del individuo con respecto a la secuencia de canales
+     */
+    static int getIndividualSize();
 
 };
 

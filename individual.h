@@ -63,6 +63,19 @@ private:
      */
     int wonMatchesCounter;
 
+    /**
+     * @brief Tamano del individuo con respecto a la estructura:
+     *
+     * C_i|MinChannelTime_i|MaxChannelTime_i|AP_i|F1|F2
+     *
+     * con i= 1,...11.
+     *
+     * Esto representará una cadena de scanning de un tamano definido por el valor. Por
+     * ejemplo se tendrán individuos con un canal o hasta con 11 (secuencia completa de 11
+     * canales).
+     *
+     */
+    int individualSize;
 
 public:
     /**

@@ -15,6 +15,10 @@ Individual::Individual(int numberOfApsDeployed)
     // asignar el valor unico del identificador del individuo
     individualId = Simulation::getNewindividualId();
 
+    // asignar el tamano del individuo
+    individualSize = MainWindow::getIndividualSize();
+    qDebug("Individual.cpp: individualSize = %s", qPrintable(QString::number(individualSize)));
+
     // se deben crear los 33 parametros
     // C1,Min1,Max1,AP1,C2,Min2,Max2,AP2,...,C11,Min11,Max11,AP11
 
@@ -39,7 +43,10 @@ Individual::Individual(int numberOfApsDeployed)
     double minChannelTime = 0;
     double maxChannelTime = 0;
 
-    for (int i=0; i<11; i++)
+
+    // iterar de acuerdo al tamano del individuo
+    //for (int i=0; i<11; i++)
+    for (int i=0; i<individualSize; i++)
     {
         randomChannel = getRandomChannel();
         parametersList.append(randomChannel);
@@ -76,7 +83,10 @@ Individual::Individual(int numberOfApsDeployed)
 
 Individual::Individual(Individual &p)
 {
-    for (int i=0; i<44; i++)
+    // iterar de acuerdo al tamano del individuo
+    //for (int i=0; i<44; i++)
+    int numParameters = getNumberOfParameters();
+    for (int i=0; i<numParameters; i++)
     {
         parametersList.append(p.getParameter(i));
     }
@@ -85,11 +95,11 @@ Individual::Individual(Individual &p)
     wonMatchesCounter = p.getWonMatchesCounter();
 
     // calcular el valor de desempeno para el individuo
-    calculatePerformanceValue();
+    //calculatePerformanceValue();
 
     // calcular el valor de desempeno para la descubierta
     //setPerformanceDiscovery(getRandomMaxChannelTime());
-    calculateDiscoveryValue();
+    //calculateDiscoveryValue();
 
     // calcular el valor de desempeno para la latencia
     //setPerformanceLatency(getRandomMaxChannelTime());
@@ -202,12 +212,23 @@ void Individual::printIndividual()
 {
     //qDebug("El Individual creado es el siguiente:");
     QString individualString("   ");
+    /*
     for (int j=0;j<44;j++)
     {
         individualString.append(QString::number(parametersList.at(j)));
         if (j!=43)
             individualString.append("-");
     }
+    */
+
+    for (int j=0;j<getNumberOfParameters();j++)
+    {
+        individualString.append(QString::number(parametersList.at(j)));
+        if (j!=getNumberOfParameters()-1)
+            individualString.append("-");
+    }
+
+
     individualString.append("-");
     individualString.append(QString::number(getPerformanceDiscovery()));
     individualString.append("-");
@@ -220,12 +241,22 @@ QString Individual::getIndividualAsQString()
 {
     //qDebug("El Individual creado es el siguiente:");
     QString individualString("");
+    /*
     for (int j=0;j<44;j++)
     {
         individualString.append(QString::number(parametersList.at(j)));
         if (j!=43)
             individualString.append("-");
     }
+    */
+
+    for (int j=0;j<getNumberOfParameters();j++)
+    {
+        individualString.append(QString::number(parametersList.at(j)));
+        if (j!=getNumberOfParameters()-1)
+            individualString.append("-");
+    }
+
     individualString.append("-");
     individualString.append(QString::number(getPerformanceDiscovery()));
     individualString.append("-");
@@ -264,7 +295,9 @@ void Individual::calculateDiscoveryValue()
     double probOfAtLeastOneAP = 0;
     double factor = 0;
 
-    for (int i=0; i<11; i++)
+    // iterar de acuerdo al tamano del individuo
+    //for (int i=0; i<11; i++)
+    for (int i=0; i<individualSize; i++)
     {
         api = parametersList.at((i*4)+3);
 
@@ -284,7 +317,9 @@ void Individual::calculateLatencyValue()
     double maxChannelTime = 0;
     double latency = 0;
 
-    for (int i=0; i<11; i++)
+    // iterar de acuerdo al tamano del individuo
+    //for (int i=0; i<11; i++)
+    for (int i=0; i<individualSize; i++)
     {
         channel = parametersList.at((i*4));
         minChannelTime = parametersList.at((i*4)+1);
