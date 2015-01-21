@@ -3,7 +3,6 @@
 #include <QTime>
 #include <QFile>
 #include <QTextStream>
-#include <QStringListModel>
 #include <QSet>
 #include <QDir>
 
