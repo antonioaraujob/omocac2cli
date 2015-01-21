@@ -431,7 +431,7 @@ void MainWindow::compareAlgorithmRepeated()
     QList<Individual*> myList = getNonDominatedIndivualsFromRepetitions(true);
     qDebug("--------");
     qDebug("individuos no dominados del algoritmo original: %s", qPrintable(QString::number(myList.count())));
-
+/*
     QVector<double> discoveryParetoOriginal(myList.count()), latencyParetoOriginal(myList.count());
     Individual * paretoIndividual;
     int vectorPosition = 0;
@@ -443,7 +443,7 @@ void MainWindow::compareAlgorithmRepeated()
         latencyParetoOriginal[vectorPosition] = paretoIndividual->getPerformanceLatency();
         vectorPosition++;
     }
-
+*/
 
     // ordenar la lista en orden ascendente de acuerdo a la latencia (F2)
     qSort(myList.begin(), myList.end(), xLessThanLatency);
@@ -464,6 +464,7 @@ void MainWindow::compareAlgorithmRepeated()
     qDebug("--------");
     qDebug("individuos no dominados del algoritmo modificado: %s", qPrintable(QString::number(myList.count())));
 
+    /*
     QVector<double> discoveryParetoModificated(myList.count()), latencyParetoModificated(myList.count());
     vectorPosition = 0;
 
@@ -474,6 +475,7 @@ void MainWindow::compareAlgorithmRepeated()
         latencyParetoModificated[vectorPosition] = paretoIndividual->getPerformanceLatency();
         vectorPosition++;
     }
+*/
 
     // ordenar la lista en orden ascendente de acuerdo a la latencia (F2)
     qSort(myList.begin(), myList.end(), xLessThanLatency);
