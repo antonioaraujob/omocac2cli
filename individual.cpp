@@ -241,6 +241,7 @@ QString Individual::getIndividualAsQString()
 {
     //qDebug("El Individual creado es el siguiente:");
     QString individualString("");
+
     /*
     for (int j=0;j<44;j++)
     {
@@ -250,6 +251,7 @@ QString Individual::getIndividualAsQString()
     }
     */
 
+    /*
     for (int j=0;j<getNumberOfParameters();j++)
     {
         individualString.append(QString::number(parametersList.at(j)));
@@ -262,6 +264,60 @@ QString Individual::getIndividualAsQString()
     individualString.append("-");
     individualString.append(QString::number(getPerformanceLatency()));
     return individualString;
+    */
+
+
+    // *********************************************************************************
+    // nuevo formato para imprimir la cadena correspondiente al individuo <c,m,M,A>
+    int aux = 1;
+
+    for (int i=0; i<individualSize; i++)
+    {
+        //qDebug("i: %s", qPrintable(QString::number(i)));
+        for (int j=0; j<4; j++)
+        {
+            //qDebug("j: %s", qPrintable(QString::number(j)));
+            if (aux == 1)
+            {
+                individualString.append("<");
+                individualString.append(QString::number(getParameter(i*4)));
+                individualString.append(",");
+                //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+                aux++;
+            }
+            else if (aux == 2)
+            {
+                individualString.append(QString::number(getParameter(i*4+1)));
+                individualString.append(",");
+                //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+                aux++;
+            }
+            else if (aux == 3)
+            {
+                individualString.append(QString::number(getParameter(i*4+2)));
+                individualString.append(",");
+                //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+                aux++;
+            }
+            else if (aux == 4)
+            {
+                individualString.append(QString::number(getParameter(i*4+3)));
+                individualString.append(">");
+                //individualString.append(",");
+                //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+                aux = 1;
+            }
+
+        }
+    }
+    //individualString.append("-");
+    individualString.append(QString::number(getPerformanceDiscovery()));
+    individualString.append("-");
+    individualString.append(QString::number(getPerformanceLatency()));
+    return individualString;
+    // *********************************************************************************
+
+
 }
 
 void Individual::setPerformanceValue(double performance)
