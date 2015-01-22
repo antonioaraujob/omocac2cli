@@ -13,7 +13,7 @@ CONFIG   += console
 CONFIG   -= app_bundle
 
 # para eliminar la aparicion de los qDebug descomentar la siguiente linea
-DEFINES += QT_NO_DEBUG_OUTPUT
+#DEFINES += QT_NO_DEBUG_OUTPUT
 
 
 TEMPLATE = app

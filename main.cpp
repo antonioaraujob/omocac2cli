@@ -1,6 +1,7 @@
 #include <QCoreApplication>
 
 #include <QSettings>
+#include <QTime>
 
 #include "mainwindow.h"
 #include "individual.h"
@@ -12,6 +13,10 @@ int main(int argc, char *argv[])
     qDebug("hola mundo");
 
     MainWindow mw;
+
+    //qsrand((uint)QTime::currentTime().msec());
+    //Individual * i = new Individual(1);
+    //i->printIndividual();
 
     if (mw.getDoComparationOfAlgorithms())
     {

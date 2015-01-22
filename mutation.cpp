@@ -167,7 +167,8 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
     // redondear el yi
     int intYi = qRound(yi);
 
-    if (isThisParameterAChannel(index))
+    //if (isThisParameterAChannel(index))
+    if (isThisParameterAChannel(index, offspring->getIndividualSize()))
     {
         //qDebug("   isThisParameterAChannel(index)");
         intYi = getRandom(1,11);
@@ -181,7 +182,8 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
         channelsUsedForMutation[intYi]=true;
         //qDebug(qPrintable("   channel despues de mutado: "+QString::number(intYi)));
     }
-    else if (isThisParameterAMinChannelTime(index))
+    //else if (isThisParameterAMinChannelTime(index))
+    else if (isThisParameterAMinChannelTime(index, offspring->getIndividualSize()))
     {
         //qDebug("   isThisParameterAMinChannelTime(index)");
         intYi = intYi + currentParameterValue;
@@ -198,7 +200,8 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
 
         //qDebug(qPrintable("   minChannelTime despues de mutado: "+QString::number(intYi)));
     }
-    else if (isThisParameterAMaxChannelTime(index))
+    //else if (isThisParameterAMaxChannelTime(index))
+    else if (isThisParameterAMaxChannelTime(index, offspring->getIndividualSize()))
     {
         //qDebug("   isThisParameterAMaxChannelTime(index)");
         intYi = intYi + currentParameterValue;
@@ -215,7 +218,8 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
 
         //qDebug(qPrintable("   maxChannelTime despues de mutado: "+QString::number(intYi)));
     }
-    else if (isThisParameterAPs(index))
+    //else if (isThisParameterAPs(index))
+    else if (isThisParameterAPs(index, offspring->getIndividualSize()))
     {
         //qDebug("   isThisParameterAPs(index)");
         //if (intYi<0)
@@ -250,6 +254,62 @@ bool Mutation::isThisParameterAChannel(int index)
     }
 }
 
+bool Mutation::isThisParameterAChannel(int index, int individualSize)
+{
+    bool isChannel = false;
+
+    if ( (individualSize == 1) && (index == 0) )
+    {
+        isChannel = true;
+    }
+    else if ( (individualSize == 2) && ( (index == 0) || (index == 4) ) )
+    {
+            isChannel = true;
+    }
+    else if ( (individualSize == 3) && ( (index == 0) || (index == 4) || (index == 8) ) )
+    {
+        isChannel = true;
+    }
+    else if ( (individualSize == 4) && ( (index == 0) || (index == 4) || (index == 8) || (index == 12) ) )
+    {
+        isChannel = true;
+    }
+    else if ( (individualSize == 5) && ( (index == 0) || (index == 4) || (index == 8) || (index == 12) || (index == 16) ) )
+    {
+        isChannel = true;
+    }
+    else if ( (individualSize == 6) && ( (index == 0) || (index == 4) || (index == 8) || (index == 12) || (index == 16) || (index == 20) ) )
+    {
+        isChannel = true;
+    }
+    else if ( (individualSize == 7) && ( (index == 0) || (index == 4) || (index == 8) || (index == 12) || (index == 16) || (index == 20)
+                                         || (index == 24) ) )
+    {
+        isChannel = true;
+    }
+    else if ( (individualSize == 8) && ( (index == 0) || (index == 4) || (index == 8) || (index == 12) || (index == 16) || (index == 20)
+                                         || (index == 24) || (index == 28) ) )
+    {
+        isChannel = true;
+    }
+    else if ( (individualSize == 9) && ( (index == 0) || (index == 4) || (index == 8) || (index == 12) || (index == 16) || (index == 20)
+                                         || (index == 24) || (index == 28) || (index == 32) ) )
+    {
+        isChannel = true;
+    }
+    else if ( (individualSize == 10) && ( (index == 0) || (index == 4) || (index == 8) || (index == 12) || (index == 16) || (index == 20)
+                                          || (index == 24) || (index == 28) || (index == 32) || (index == 36) ) )
+    {
+        isChannel = true;
+    }
+    else if ( (individualSize == 11) && ( (index == 0) || (index == 4) || (index == 8) || (index == 12) || (index == 16) || (index == 20)
+                                          || (index == 24) || (index == 28) || (index == 32) || (index == 36) || (index == 40) ) )
+    {
+        isChannel = true;
+    }
+    return isChannel;
+}
+
 bool Mutation::isThisParameterAMinChannelTime(int index)
 {
     if ( (index == 1) || (index == 5) || (index == 9) || (index == 13) || (index == 17) ||
@@ -261,6 +321,62 @@ bool Mutation::isThisParameterAMinChannelTime(int index)
     {
         return false;
     }
+}
+
+bool Mutation::isThisParameterAMinChannelTime(int index, int individualSize)
+{
+    bool isMin = false;
+
+    if ( (individualSize == 1) && (index == 1) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 2) && ( (index == 1) || (index == 5) ) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 3) && ( (index == 1) || (index == 5) || (index == 9) ) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 4) && ( (index == 1) || (index == 5) || (index == 9) || (index == 13) ) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 5) && ( (index == 1) || (index == 5) || (index == 9) || (index == 13) || (index == 17) ) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 6) && ( (index == 1) || (index == 5) || (index == 9) || (index == 13) || (index == 17) || (index == 21) ) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 7) && ( (index == 1) || (index == 5) || (index == 9) || (index == 13) || (index == 17) || (index == 21)
+                                         || (index == 25) ) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 8) && ( (index == 1) || (index == 5) || (index == 9) || (index == 13) || (index == 17) || (index == 21)
+                                         || (index == 25) || (index == 29) ) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 9) && ( (index == 1) || (index == 5) || (index == 9) || (index == 13) || (index == 17) || (index == 21)
+                                         || (index == 25) || (index == 29) || (index == 33) ) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 10) && ( (index == 1) || (index == 5) || (index == 9) || (index == 13) || (index == 17) || (index == 21)
+                                          || (index == 25) || (index == 29) || (index == 33) || (index == 37) ) )
+    {
+        isMin = true;
+    }
+    else if ( (individualSize == 11) && ( (index == 1) || (index == 5) || (index == 9) || (index == 13) || (index == 17) || (index == 21)
+                                          || (index == 25) || (index == 29) || (index == 33) || (index == 37) || (index == 41) ) )
+    {
+        isMin = true;
+    }
+    return isMin;
 }
 
 bool Mutation::isThisParameterAMaxChannelTime(int index)
@@ -276,6 +392,61 @@ bool Mutation::isThisParameterAMaxChannelTime(int index)
     }
 }
 
+bool Mutation::isThisParameterAMaxChannelTime(int index, int individualSize)
+{
+    bool isMax = false;
+
+    if ( (individualSize == 1) && (index == 2) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 2) && ( (index == 2) || (index == 6) ) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 3) && ( (index == 2) || (index == 6) || (index == 10) ) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 4) && ( (index == 2) || (index == 6) || (index == 10) || (index == 14) ) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 5) && ( (index == 2) || (index == 6) || (index == 10) || (index == 14) || (index == 18) ) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 6) && ( (index == 2) || (index == 6) || (index == 10) || (index == 14) || (index == 18) || (index == 22) ) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 7) && ( (index == 2) || (index == 6) || (index == 10) || (index == 14) || (index == 18) || (index == 22)
+                                         || (index == 26) ) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 8) && ( (index == 2) || (index == 6) || (index == 10) || (index == 14) || (index == 18) || (index == 22)
+                                         || (index == 26) || (index == 30) ) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 9) && ( (index == 2) || (index == 6) || (index == 10) || (index == 14) || (index == 18) || (index == 22)
+                                         || (index == 26) || (index == 30) || (index == 34) ) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 10) && ( (index == 2) || (index == 6) || (index == 10) || (index == 14) || (index == 18) || (index == 22)
+                                          || (index == 26) || (index == 30) || (index == 34) || (index == 38) ) )
+    {
+        isMax = true;
+    }
+    else if ( (individualSize == 11) && ( (index == 2) || (index == 6) || (index == 10) || (index == 14) || (index == 18) || (index == 22)
+                                          || (index == 26) || (index == 30) || (index == 34) || (index == 38) || (index == 42) ) )
+    {
+        isMax = true;
+    }
+    return isMax;
+}
 
 bool Mutation::isThisParameterAPs(int index)
 {
@@ -288,6 +459,62 @@ bool Mutation::isThisParameterAPs(int index)
     {
         return false;
     }
+}
+
+bool Mutation::isThisParameterAPs(int index, int individualSize)
+{
+    bool isAp = false;
+
+    if ( (individualSize == 1) && (index == 3) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 2) && ( (index == 3) || (index == 7) ) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 3) && ( (index == 3) || (index == 7) || (index == 11) ) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 4) && ( (index == 3) || (index == 7) || (index == 11) || (index == 15) ) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 5) && ( (index == 3) || (index == 7) || (index == 11) || (index == 15) || (index == 19) ) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 6) && ( (index == 3) || (index == 7) || (index == 11) || (index == 15) || (index == 19) || (index == 23) ) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 7) && ( (index == 3) || (index == 7) || (index == 11) || (index == 15) || (index == 19) || (index == 23)
+                                         || (index == 27) ) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 8) && ( (index == 3) || (index == 7) || (index == 11) || (index == 15) || (index == 19) || (index == 23)
+                                         || (index == 27) || (index == 31) ) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 9) && ( (index == 3) || (index == 7) || (index == 11) || (index == 15) || (index == 19) || (index == 23)
+                                         || (index == 27) || (index == 31) || (index == 35) ) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 10) && ( (index == 3) || (index == 7) || (index == 11) || (index == 15) || (index == 19) || (index == 23)
+                                          || (index == 27) || (index == 31) || (index == 35) || (index == 39) ) )
+    {
+        isAp = true;
+    }
+    else if ( (individualSize == 11) && ( (index == 3) || (index == 6) || (index == 11) || (index == 15) || (index == 19) || (index == 23)
+                                          || (index == 27) || (index == 31) || (index == 35) || (index == 39) || (index == 43) ) )
+    {
+        isAp = true;
+    }
+    return isAp;
 }
 
 void Mutation::printNewPopulation()

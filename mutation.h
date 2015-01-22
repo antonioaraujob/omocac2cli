@@ -114,11 +114,27 @@ public:
     bool isThisParameterAChannel(int index);
 
     /**
+     * @brief Retorna verdadero si el parametro a revisar de un individuo corresponde a un canal
+     * @param index indice del parametro a revisar del individuo
+     * @param individualSize tamano del individuo
+     * @return Verdadero si el indice corresponde a un parametro de numero de canal
+     */
+    bool isThisParameterAChannel(int index, int individualSize);
+
+    /**
      * @brief Retorna verdadero si el parametro a revisar de un individuo corresponde a un MinChannelTime
      * @param index indice del parametro a revisar del individuo
      * @return Verdadero si el indice corresponde a un parametro de MinChannelTime
      */
     bool isThisParameterAMinChannelTime(int index);
+
+    /**
+     * @brief Retorna verdadero si el parametro a revisar de un individuo corresponde a un MinChannelTime
+     * @param index indice del parametro a revisar del individuo
+     * @param individualSize tamano del individuo
+     * @return Verdadero si el indice corresponde a un parametro de MinChannelTime
+     */
+    bool isThisParameterAMinChannelTime(int index, int individualSize);
 
     /**
      * @brief Retorna verdadero si el parametro a revisar de un individuo corresponde a un MaxChannelTime
@@ -128,11 +144,27 @@ public:
     bool isThisParameterAMaxChannelTime(int index);
 
     /**
+     * @brief Retorna verdadero si el parametro a revisar de un individuo corresponde a un MaxChannelTime
+     * @param index indice del parametro a revisar del individuo
+     * @param individualSize tamano del individuo
+     * @return Verdadero si el indice corresponde a un parametro de MaxChannelTime
+     */
+    bool isThisParameterAMaxChannelTime(int index, int individualSize);
+
+    /**
      * @brief Retorna verdadero si el parametro a revisar de un individuo corresponde a numero de APs
      * @param index indice del parametro a revisar del individuo
      * @return Verdadero si el indice corresponde a un parametro de APs
      */
     bool isThisParameterAPs(int index);
+
+    /**
+     * @brief Retorna verdadero si el parametro a revisar de un individuo corresponde a numero de APs
+     * @param index indice del parametro a revisar del individuo
+     * @param individualSize tamano del individuo
+     * @return Verdadero si el indice corresponde a un parametro de APs
+     */
+    bool isThisParameterAPs(int index, int individualSize);
 
     /**
      * @brief Imprime en una cadena legible al humano la nueva poblacion de tamano 2p

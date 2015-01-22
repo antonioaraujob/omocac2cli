@@ -102,6 +102,12 @@ public:
     int getIndividualId();
 
     /**
+     * @brief Retorna el tamano del individuo con respecto al numero de bloques en la cadena de escaneo
+     * @return el tamano del individuo con respecto al numero de bloques en la cadena de escaneo
+     */
+    int getIndividualSize();
+
+    /**
      * @brief Retorna un numero de canal aleatorio.
      *
      * Esta funcion se utiliza para inicializar los individuos de manera que los canales

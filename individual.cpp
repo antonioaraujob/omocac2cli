@@ -17,7 +17,7 @@ Individual::Individual(int numberOfApsDeployed)
 
     // asignar el tamano del individuo
     individualSize = MainWindow::getIndividualSize();
-    qDebug("Individual.cpp: individualSize = %s", qPrintable(QString::number(individualSize)));
+    //qDebug("Individual.cpp: individualSize = %s", qPrintable(QString::number(individualSize)));
 
     // se deben crear los 33 parametros
     // C1,Min1,Max1,AP1,C2,Min2,Max2,AP2,...,C11,Min11,Max11,AP11
@@ -69,7 +69,7 @@ Individual::Individual(int numberOfApsDeployed)
     }
 
     // calcular el valor de desempeno para el individuo
-    calculatePerformanceValue();
+    //calculatePerformanceValue();
 
     // calcular el valor de desempeno para la descubierta
     //setPerformanceDiscovery(getRandomMaxChannelTime());
@@ -99,7 +99,7 @@ Individual::Individual(Individual &p)
 
     // calcular el valor de desempeno para la descubierta
     //setPerformanceDiscovery(getRandomMaxChannelTime());
-    //calculateDiscoveryValue();
+    calculateDiscoveryValue();
 
     // calcular el valor de desempeno para la latencia
     //setPerformanceLatency(getRandomMaxChannelTime());
@@ -109,6 +109,11 @@ Individual::Individual(Individual &p)
 int Individual::getIndividualId()
 {
     return individualId;
+}
+
+int Individual::getIndividualSize()
+{
+    return individualSize;
 }
 
 
@@ -221,6 +226,7 @@ void Individual::printIndividual()
     }
     */
 
+    /*
     for (int j=0;j<getNumberOfParameters();j++)
     {
         individualString.append(QString::number(parametersList.at(j)));
@@ -235,6 +241,61 @@ void Individual::printIndividual()
     individualString.append(QString::number(getPerformanceLatency()));
     qDebug(qPrintable(individualString));
     //qDebug("Fo:%f",getPerformanceValue());
+    */
+
+    // *********************************************************************************
+    // nuevo formato para imprimir la cadena correspondiente al individuo <c,m,M,A>
+    int aux = 1;
+
+    for (int i=0; i<individualSize; i++)
+    {
+        //qDebug("i: %s", qPrintable(QString::number(i)));
+        for (int j=0; j<4; j++)
+        {
+            //qDebug("j: %s", qPrintable(QString::number(j)));
+            if (aux == 1)
+            {
+                individualString.append("<");
+                individualString.append(QString::number(getParameter(i*4)));
+                individualString.append(",");
+                //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+                aux++;
+            }
+            else if (aux == 2)
+            {
+                individualString.append(QString::number(getParameter(i*4+1)));
+                individualString.append(",");
+                //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+                aux++;
+            }
+            else if (aux == 3)
+            {
+                individualString.append(QString::number(getParameter(i*4+2)));
+                individualString.append(",");
+                //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+                aux++;
+            }
+            else if (aux == 4)
+            {
+                individualString.append(QString::number(getParameter(i*4+3)));
+                individualString.append(">");
+                //individualString.append(",");
+                //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+                aux = 1;
+            }
+
+        }
+    }
+    //individualString.append("-");
+    individualString.append(QString::number(getPerformanceDiscovery()));
+    individualString.append("-");
+    individualString.append(QString::number(getPerformanceLatency()));
+
+    qDebug(qPrintable(individualString));
+    // *********************************************************************************
+
+
+
 }
 
 QString Individual::getIndividualAsQString()
