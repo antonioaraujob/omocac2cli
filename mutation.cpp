@@ -667,7 +667,10 @@ void Mutation::directedMutation(NormativeGrid *grid, Individual *father)
 
             // verlo primero por bloque y luego por individuo...
             // iterar por bloque
-            for (int i=0; i<11;i++)
+            // la cantidad de bloques viene dada por el tamano del individuo
+
+            //for (int i=0; i<11;i++)
+            for (int i=0; i<father->getIndividualSize(); i++)
             {
                 // iterar por individuo
                 for (int j=0; j<numberOfIndividuals;j++)
@@ -722,7 +725,10 @@ void Mutation::directedMutation(NormativeGrid *grid, Individual *father)
 
             // verlo primero por bloque y luego por individuo...
             // iterar por bloque
-            for (int i=0; i<11;i++)
+            // la cantidad de bloques viene dada por el tamano del individuo
+
+            //for (int i=0; i<11;i++)
+            for (int i=0; i<father->getIndividualSize(); i++)
             {
                 // iterar por individuo
                 for (int j=0; j<numberOfIndividuals;j++)
@@ -806,7 +812,8 @@ void Mutation::directedMutation(NormativeGrid *grid, Individual *father)
             qDebug("------------------------------------------");
 
 
-            for (int i=0; i<11; i++)
+            //for (int i=0; i<11; i++)
+            for (int i=0; i<father->getIndividualSize(); i++)
             {
                 preOffspring->setParameter(i*4,finalSequence.at(i));
             }
