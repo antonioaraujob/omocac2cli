@@ -411,7 +411,7 @@ void Individual::calculateDiscoveryValue()
     double discovery = 0;
     double probOfAtLeastOneAP = 0;
     double factor = 0;
-
+/*
     // iterar de acuerdo al tamano del individuo
     //for (int i=0; i<11; i++)
     for (int i=0; i<individualSize; i++)
@@ -424,6 +424,13 @@ void Individual::calculateDiscoveryValue()
 
         discovery = discovery + api + probOfAtLeastOneAP;
     }
+*/
+    // suma de los valores de AP por canal
+    for (int i=0; i<individualSize; i++)
+    {
+        discovery = discovery + parametersList.at((i*4)+3);
+    }
+
     performanceDiscovery = discovery;
 }
 
@@ -434,6 +441,7 @@ void Individual::calculateLatencyValue()
     double maxChannelTime = 0;
     double latency = 0;
 
+/*
     // iterar de acuerdo al tamano del individuo
     //for (int i=0; i<11; i++)
     for (int i=0; i<individualSize; i++)
@@ -443,6 +451,14 @@ void Individual::calculateLatencyValue()
         maxChannelTime = parametersList.at((i*4)+2);
         latency = latency + minChannelTime + (probabilityDelayLessThanMinCT(minChannelTime)*probabilityExistAtLeastOneAp(channel)*maxChannelTime);
     }
+*/
+    for (int i=0; i<individualSize; i++)
+    {
+        minChannelTime = parametersList.at((i*4)+1);
+        maxChannelTime = parametersList.at((i*4)+2);
+        latency = latency + minChannelTime + maxChannelTime;
+    }
+
     performanceLatency = latency;
 }
 
