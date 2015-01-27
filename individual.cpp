@@ -455,7 +455,15 @@ void Individual::calculateLatencyValue()
     for (int i=0; i<individualSize; i++)
     {
         minChannelTime = parametersList.at((i*4)+1);
-        maxChannelTime = parametersList.at((i*4)+2);
+        if (minChannelTime != 0)
+        {
+            maxChannelTime = parametersList.at((i*4)+2);
+        }
+        else
+        {
+            maxChannelTime = 0;
+        }
+
         latency = latency + minChannelTime + maxChannelTime;
     }
 
