@@ -534,12 +534,17 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
     QString database("test_18.1.db");
     // tipo de experimento para extraer las muestras: full -> full scanning
     QString experiment("full");
-    Scan scan(database.toStdString(),experiment.toStdString());
+
+    //Scan scan(database.toStdString(),experiment.toStdString());
+    ScanningCampaing scan(database.toStdString(),experiment.toStdString());
     scan.init();
 
-    Scan::ScanResults results;
+    //Scan::ScanResults results;
+    ScanningCampaing::ScanResults results;
 
-    results = scan.execute(channel, minChannelTime, maxChannelTime);
+    //results = scan.execute(channel, minChannelTime, maxChannelTime);
+
+    results = scan.randomScan(channel, minChannelTime, maxChannelTime);
 
     //qDebug("** nuevo parametro AP: %d", results.size());
     return results.size();

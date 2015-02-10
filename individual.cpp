@@ -19,6 +19,8 @@ Individual::Individual(int numberOfApsDeployed)
     individualSize = MainWindow::getIndividualSize();
     //qDebug("Individual.cpp: individualSize = %s", qPrintable(QString::number(individualSize)));
 
+    emulateScanning = MainWindow::getEmulateScanning();
+
     // se deben crear los 33 parametros
     // C1,Min1,Max1,AP1,C2,Min2,Max2,AP2,...,C11,Min11,Max11,AP11
 
@@ -31,11 +33,13 @@ Individual::Individual(int numberOfApsDeployed)
     // tipo de experimento para extraer las muestras: full -> full scanning
     QString experiment("full");
 
-    Scan scan(database.toStdString(),experiment.toStdString());
+    //Scan scan(database.toStdString(),experiment.toStdString());
+    ScanningCampaing scan(database.toStdString(),experiment.toStdString());
+
     scan.init();
 
     //Scan::ScanResults results = scan.execute(11, 10, 30);
-    Scan::ScanResults results;
+    ScanningCampaing::ScanResults results;
 
     //std::cout << results.size() << " results: " << std::endl;
 
@@ -59,7 +63,11 @@ Individual::Individual(int numberOfApsDeployed)
         //parametersList.append(getAPNumberOnChannel(numberOfApsDeployed, randomChannel));
 
         //qDebug("**channel: %d, min: %f, max: %f",randomChannel, minChannelTime, maxChannelTime);
-        results = scan.execute(randomChannel, minChannelTime, maxChannelTime);
+        //results = scan.execute(randomChannel, minChannelTime, maxChannelTime);
+
+        // nueva funcion para obtener el numero de AP de acuerdo a la campana de medicion
+        results = scan.randomScan(randomChannel, minChannelTime, maxChannelTime);
+
         //qDebug("**numero de APs encontrados en el canal %d: %d",randomChannel, results.size());
         //std::cout << " numero de APs encontrados en el canal: " << randomChannel << ": " << results.size() << std::endl;
         //qDebug("**scan.execute(%d, %f, %f)=%d",randomChannel, minChannelTime, maxChannelTime, results.size());
@@ -92,6 +100,11 @@ Individual::Individual(Individual &p)
     }
 
     individualId = p.getIndividualId();
+
+    individualSize = p.getIndividualSize();
+
+    emulateScanning = p.getEmulateScanning();
+
     wonMatchesCounter = p.getWonMatchesCounter();
 
     // calcular el valor de desempeno para el individuo
@@ -411,27 +424,38 @@ void Individual::calculateDiscoveryValue()
     double discovery = 0;
     double probOfAtLeastOneAP = 0;
     double factor = 0;
-/*
-    // iterar de acuerdo al tamano del individuo
-    //for (int i=0; i<11; i++)
-    for (int i=0; i<individualSize; i++)
+    double maxChannelTime = 0;
+
+    if (getEmulateScanning())
     {
-        api = parametersList.at((i*4)+3);
-
-        probOfAtLeastOneAP = probabilityExistAtLeastOneAp(i+1);
-
-        factor = probOfAtLeastOneAP / (i+1);
-
-        discovery = discovery + api + probOfAtLeastOneAP;
+        // suma de los valores de AP por canal
+        for (int i=0; i<individualSize; i++)
+        {
+            discovery = discovery + parametersList.at((i*4)+3);
+        }
     }
-*/
-    // suma de los valores de AP por canal
-    for (int i=0; i<individualSize; i++)
+    else
     {
-        discovery = discovery + parametersList.at((i*4)+3);
+        // iterar de acuerdo al tamano del individuo
+        //for (int i=0; i<11; i++)
+        for (int i=0; i<individualSize; i++)
+        {
+            api = parametersList.at((i*4)+3);
+            maxChannelTime = parametersList.at((i*4)+2);
+
+            probOfAtLeastOneAP = probabilityExistAtLeastOneAp(i+1);
+
+            factor = probOfAtLeastOneAP / (i+1);
+
+            //discovery = discovery + api + probOfAtLeastOneAP;
+
+            // prueba de la funcion objetivo D tal cual como aparece en el articulo
+            discovery = discovery + (probabilityOfFindingAllAps(maxChannelTime) * percentageOfAps(i+1));
+        }
     }
 
     performanceDiscovery = discovery;
+
 }
 
 void Individual::calculateLatencyValue()
@@ -441,30 +465,36 @@ void Individual::calculateLatencyValue()
     double maxChannelTime = 0;
     double latency = 0;
 
-/*
-    // iterar de acuerdo al tamano del individuo
-    //for (int i=0; i<11; i++)
-    for (int i=0; i<individualSize; i++)
+
+    if (getEmulateScanning())
     {
-        channel = parametersList.at((i*4));
-        minChannelTime = parametersList.at((i*4)+1);
-        maxChannelTime = parametersList.at((i*4)+2);
-        latency = latency + minChannelTime + (probabilityDelayLessThanMinCT(minChannelTime)*probabilityExistAtLeastOneAp(channel)*maxChannelTime);
-    }
-*/
-    for (int i=0; i<individualSize; i++)
-    {
-        minChannelTime = parametersList.at((i*4)+1);
-        if (minChannelTime != 0)
+
+        for (int i=0; i<individualSize; i++)
         {
-            maxChannelTime = parametersList.at((i*4)+2);
-        }
-        else
-        {
-            maxChannelTime = 0;
+            minChannelTime = parametersList.at((i*4)+1);
+            if (minChannelTime != 0)
+            {
+                maxChannelTime = parametersList.at((i*4)+2);
+            }
+            else
+            {
+                maxChannelTime = 0;
+            }
+            latency = latency + minChannelTime + maxChannelTime;
         }
 
-        latency = latency + minChannelTime + maxChannelTime;
+    }
+    else
+    {
+        // iterar de acuerdo al tamano del individuo
+        //for (int i=0; i<11; i++)
+        for (int i=0; i<individualSize; i++)
+        {
+            channel = parametersList.at((i*4));
+            minChannelTime = parametersList.at((i*4)+1);
+            maxChannelTime = parametersList.at((i*4)+2);
+            latency = latency + minChannelTime + (probabilityDelayLessThanMinCT(minChannelTime)*probabilityExistAtLeastOneAp(channel)*maxChannelTime);
+        }
     }
 
     performanceLatency = latency;
@@ -579,6 +609,38 @@ double Individual::probabilityExistAtLeastOneAp(int channel)
     return probability;
 }
 
+double Individual::percentageOfAps(int channel)
+{
+    double percentage = 0;
+
+    if (channel == 1)
+        percentage = 18;
+    else if (channel == 2)
+        percentage = 1;
+    else if (channel == 3)
+        percentage = 3;
+    else if (channel == 4)
+        percentage = 1;
+    else if (channel == 5)
+        percentage = 1;
+    else if (channel == 6)
+        percentage = 37;
+    else if (channel == 7)
+        percentage = 2;
+    else if (channel == 8)
+        percentage = 1;
+    else if (channel == 9)
+        percentage = 7;
+    else if (channel == 10)
+        percentage = 6;
+    else if (channel == 11)
+        percentage = 23;
+    else
+        percentage = 0;
+
+    return percentage;
+}
+
 double Individual::probabilityDelayLessThanMinCT(double delay)
 {
     //qDebug("Individual::probabilityDelayLessThanMinCT");
@@ -646,5 +708,74 @@ double Individual::probabilityDelayLessThanMinCT(double delay)
 }
 
 
+double Individual::probabilityOfFindingAllAps(double delay)
+{
+    //qDebug("Individual::probabilityOfFindingAllAps");
+
+    double probability = 0;
+
+    if (delay == 0)
+        probability = 0;
+    else if (delay == 1)
+        probability = 0.01;
+    else if (delay == 2)
+        probability = 0.02;
+    else if (delay == 3)
+        probability = 0.19;
+    else if (delay == 4)
+        probability = 0.28;
+    else if (delay == 5)
+        probability = 0.34;
+    else if (delay == 6)
+        probability = 0.42;
+    else if (delay == 7)
+        probability = 0.49;
+    else if (delay == 8)
+        probability = 0.53;
+    else if (delay == 9)
+        probability = 0.59;
+    else if (delay == 10)
+        probability = 0.61;
+    else if (delay == 11)
+        probability = 0.65;
+    else if (delay == 12)
+        probability = 0.7;
+    else if (delay == 13)
+        probability = 0.73;
+    else if (delay == 14)
+        probability = 0.78;
+    else if (delay == 15)
+        probability = 0.8;
+    else if (delay == 16)
+        probability = 0.82;
+    else if (delay == 17)
+        probability = 0.86;
+    else if (delay == 18)
+        probability = 0.88;
+    else if (delay == 19)
+        probability = 0.91;
+    else if (delay == 20)
+        probability = 0.94;
+    else if (delay == 21)
+        probability = 0.96;
+    else if (delay == 22)
+        probability = 0.97;
+    else if (delay == 23)
+        probability = 0.98;
+    else if (delay == 24)
+        probability = 0.99;
+    else if (delay == 25)
+        probability = 1;
+    else if (delay > 25)
+        probability =  1;
+    else
+        probability = 0;
+
+    return probability;
+}
 
 
+bool Individual::getEmulateScanning()
+{
+    return emulateScanning;
+}

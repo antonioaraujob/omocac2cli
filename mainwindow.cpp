@@ -26,6 +26,11 @@ inline static bool xLessThanLatency(Individual *p1, Individual *p2)
  */
 int MainWindow::individualSize = 0;
 
+/**
+ * @brief Define e inicializa el miembro estatico emulateScanning
+ */
+
+bool MainWindow::emulateScanning = true;
 
 MainWindow::MainWindow()
 {
@@ -69,6 +74,9 @@ MainWindow::MainWindow()
 
     individualSize = settings.value("tamanoDeIndividuo").toInt();
     qDebug("individualSize %s", qPrintable(QString::number(individualSize)));
+
+
+    emulateScanning = settings.value("emularScanning").toBool();
 
     qDebug("salida");
 
@@ -827,4 +835,10 @@ bool MainWindow::getDoComparationOfAlgorithms()
 int MainWindow::getIndividualSize()
 {
     return individualSize;
+}
+
+
+bool MainWindow::getEmulateScanning()
+{
+    return emulateScanning;
 }

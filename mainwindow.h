@@ -106,6 +106,14 @@ private:
      */
     static int individualSize;
 
+    /**
+     * @brief Verdadero si se desea emular el proceso de scanning de acuerdo a la campana de recoleccion
+     * de datos del Profesor Laudin. En caso contrario se utiliza el modelo matematico descrito en el
+     * articulo PIMRC 13
+     */
+    static bool emulateScanning;
+
+
 public:
 
     /**
@@ -328,6 +336,13 @@ public:
      * @return tamano del individuo con respecto a la secuencia de canales
      */
     static int getIndividualSize();
+
+
+    /**
+     * @brief Retorna si se debe utilizar la emulacion de scanning de acuerdo a la campana de mediciones
+     * @return si se debe utilizar la emulacion de scanning de acuerdo a la campana de mediciones
+     */
+    static bool getEmulateScanning();
 
 };
 

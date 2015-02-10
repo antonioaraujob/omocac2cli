@@ -77,6 +77,12 @@ private:
      */
     int individualSize;
 
+    /**
+     * @brief Verdadero si se debe emular el scanning de acuerdo a la campana de medicion.
+     * En otro caso se usa el modelo matematico del articulo de PIMRC 13
+     */
+    bool emulateScanning;
+
 public:
     /**
      * @brief Constructor de la clase
@@ -257,6 +263,16 @@ public:
     double probabilityExistAtLeastOneAp(int channel);
 
     /**
+     * @brief Retorna el porcentaje de APs en el canal pasado como argumento
+     *
+     *  El valor retornado  es aproximado de acuerdo al articulo que se esta estudiando
+     *
+     * @param channel canal para determinar el porcentaje de APs
+     * @return el porcentaje de APs en el canal pasado como argumento
+     */
+    double percentageOfAps(int channel);
+
+    /**
      * @brief Retorna la probabilidad de que el retardo del primer Probe Response sea menor que el
      * parametro MinChannelTime
      *
@@ -268,7 +284,23 @@ public:
      */
     double probabilityDelayLessThanMinCT(double delay);
 
+    /**
+     * @brief Retorna la probabilidad de encontrar todos los AP disponibles en el canal i
+     *
+     * La distribucion de probabilidad es aproximada de acuerdo al articulo que se esta estudiando
+     *
+     * @param delay retardo del primer Probe Response recibido
+     * @return probabilidad de encontrar todos los AP disponibles en el canal i
+     * parametro MinChannelTime
+     */
+    double probabilityOfFindingAllAps(double delay);
 
+    /**
+     * @brief Retorna si se debe emular el scanning de acuerdo a la campana de medicion.
+     * En otro caso se utiliza el modelo matematico.
+     * @return Retorna si se debe emular el scanning de acuerdo a la campana de medicion.
+     */
+    bool getEmulateScanning();
 };
 
 #endif // INDIVIDUAL_H
