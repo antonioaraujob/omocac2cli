@@ -159,7 +159,10 @@ int Individual::getRandomChannel()
 double Individual::getRandomMinChannelTime()
 {
     // el rango es 0 <= MinChannelTime <= 10 en ms
-    int low = 0;
+
+    // se esta restringiendo el hecho de que el MinChannelTime sea 0
+    //int low = 0;
+    int low = 1;
     int high = 10;
     return qrand() % ((high + 1) - low) + low;
 }
