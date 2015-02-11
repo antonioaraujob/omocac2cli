@@ -187,10 +187,19 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
     {
         //qDebug("   isThisParameterAMinChannelTime(index)");
         intYi = intYi + currentParameterValue;
-        if (intYi < 0)
+        //if (intYi < 0)
+        if (intYi <= 0)
         {
-            intYi = 0;
+            //intYi = 0;
             //qDebug("   el minChannelTime mutado esta por debajo del limite (index %d)", index);
+
+            while(intYi <=0)
+            {
+                yi = distribution(generator);
+                intYi = qRound(yi);
+            }
+
+
         }
         else if (intYi > 10)
         {
