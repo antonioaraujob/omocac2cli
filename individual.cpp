@@ -385,9 +385,11 @@ QString Individual::getIndividualAsQString()
         }
     }
     //individualString.append("-");
+    individualString.append("<");
     individualString.append(QString::number(getPerformanceDiscovery()));
-    individualString.append("-");
+    individualString.append(",");
     individualString.append(QString::number(getPerformanceLatency()));
+    individualString.append(">");
     return individualString;
     // *********************************************************************************
 
