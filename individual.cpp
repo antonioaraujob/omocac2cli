@@ -71,6 +71,7 @@ Individual::Individual(int numberOfApsDeployed)
         //qDebug("**numero de APs encontrados en el canal %d: %d",randomChannel, results.size());
         //std::cout << " numero de APs encontrados en el canal: " << randomChannel << ": " << results.size() << std::endl;
         //qDebug("**scan.execute(%d, %f, %f)=%d",randomChannel, minChannelTime, maxChannelTime, results.size());
+
         parametersList.append(results.size());
 
         wonMatchesCounter = 0;

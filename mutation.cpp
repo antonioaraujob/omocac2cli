@@ -61,7 +61,6 @@ void Mutation::doMutation(QList<Individual *> population, double std, int deploy
         {
             newParameterValue = mutateIndividualParameter(i, 0 /*father->getParameter(i)*/,std, father->getParameter(i), offspring);
             offspring->setParameter(i, newParameterValue);
-
         }
         // se muto el offspring ahora limpiar el diccionario de canales usados
         // asignar el diccionario de canales utilizados en la mutacion en falso
@@ -228,7 +227,8 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
         //qDebug(qPrintable("   maxChannelTime despues de mutado: "+QString::number(intYi)));
     }
     //else if (isThisParameterAPs(index))
-    else if (isThisParameterAPs(index, offspring->getIndividualSize()))
+    //else if (isThisParameterAPs(index, offspring->getIndividualSize()))
+    else
     {
         //qDebug("   isThisParameterAPs(index)");
         //if (intYi<0)
@@ -240,12 +240,15 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
                                    offspring->getParameter(index-2),
                                    offspring->getParameter(index-1));
 
+        if (intYi < 0)
+        {
+            qDebug(qPrintable("*********   APs despues de mutado NEGATIVO: "+QString::number(intYi)));
+        }
 
-
-        //qDebug(qPrintable("   APs despues de mutado: "+QString::number(intYi)));
+        qDebug(qPrintable("   APs despues de mutado: "+QString::number(intYi)));
     }
 
-    //qDebug("----return----");
+    qDebug(qPrintable("   ----intYi justo antes de return: "+QString::number(intYi)));
     return intYi;
 }
 
@@ -555,8 +558,8 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
 
     results = scan.randomScan(channel, minChannelTime, maxChannelTime);
 
-    //qDebug("** nuevo parametro AP: %d", results.size());
-    return results.size();
+    qDebug("** nuevo parametro AP: %d", results.size());
+    return (int) results.size();
 
 
 }
