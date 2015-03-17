@@ -32,7 +32,8 @@ SOURCES += main.cpp \
     externalfile.cpp \
     selection.cpp \
     mutation.cpp \
-    cell.cpp
+    cell.cpp \
+    gen.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -44,4 +45,5 @@ HEADERS += \
     externalfile.h \
     selection.h \
     mutation.h \
-    cell.h
+    cell.h \
+    gen.h

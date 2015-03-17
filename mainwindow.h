@@ -256,6 +256,16 @@ public:
 
 
     /**
+     * @brief genera un archivo con los individuos de la lista pasado como argumento en la que cada
+     * individuo esta ordenado de acuerdo a la latencia en genes de mayor a menor
+     * @param list lista de individuos para escribir en el archivo
+     * @param resultsSubdirectory cadena con la ruta absoluta del subdirectorio para almacenar los
+     * resultados
+     * @param fileName nombre del archivo que almacenara los individuos
+     */
+    void reportIndividualOrderedByLatencyInGenes(QList<Individual*> list, QString resultsSubdirectory, QString fileName);
+
+    /**
      * @brief Funcion para colocar las cadenas de individuos en los listview de la
      * pestana de cadenas de la interfaz grafica
      * @param list lista de individuos a colocar en el listview

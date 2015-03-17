@@ -8,6 +8,7 @@
 
 #include "individual.h"
 #include "simulation.h"
+#include "gen.h"
 
 
 /**
@@ -20,6 +21,18 @@ inline static bool xLessThanLatency(Individual *p1, Individual *p2)
 {
     return p1->getPerformanceLatency() < p2->getPerformanceLatency();
 }
+
+/**
+ * @brief funcion de comparacion de genes con respecto al valor de la latencia
+ * @param g1 gen1 a comparar
+ * @param g2 gen2 a comparar
+ * @return
+ */
+inline static bool genLessThanLatency(Gen *g1, Gen *g2)
+{
+    return g1->getLatency() < g2->getLatency();
+}
+
 
 /**
  * @brief Define e inicializa el miembro estatico individualSize
@@ -312,6 +325,10 @@ void MainWindow::executeAlgorithm()
 
         // escribir en un archivo los individuos del frente de pareto encontrado en un archivo
         reportIndividualAsFile(finalResultsList, resultsDirectory, outputFileName);
+
+
+        // escribir en un archivo los individuos del frente de pareto encontrado ordenados por latencia en genes en un archivo
+        reportIndividualOrderedByLatencyInGenes(finalResultsList, resultsDirectory, "individuosFrenteParetoOriginalPorLatencia");
     }
     // *****************************************************************************
 
@@ -466,6 +483,9 @@ void MainWindow::compareAlgorithmRepeated()
     // escribir en un archivo los individuos del frente de pareto encontrado en un archivo
     reportIndividualAsFile(myList, resultsDirectory, "individuosFrenteParetoOriginal");
 
+    // escribir en un archivo los individuos del frente de pareto encontrado ordenados por latencia en genes en un archivo
+    reportIndividualOrderedByLatencyInGenes(myList, resultsDirectory, "individuosFrenteParetoOriginalPorLatencia");
+
 
     // colocar las cadenas en la pestana de cadenas de la interfaz grafica
     //populateAListView(myList, ui->listViewPFOriginal);
@@ -496,6 +516,9 @@ void MainWindow::compareAlgorithmRepeated()
 
     // escribir en un archivo los individuos del frente de pareto encontrado en un archivo
     reportIndividualAsFile(myList, resultsDirectory, "individuosFrenteParetoModificado");
+
+    // escribir en un archivo los individuos del frente de pareto encontrado ordenados por latencia en genes en un archivo
+    reportIndividualOrderedByLatencyInGenes(myList, resultsDirectory, "individuosFrenteParetoModificadoPorLatencia");
 
     // colocar las cadenas en la pestana de cadenas de la interfaz grafica
     //populateAListView(myList, ui->listViewPFModificated);
@@ -547,6 +570,124 @@ void MainWindow::reportIndividualAsFile(QList<Individual*> list, QString results
     {
         out << list.at(i)->getIndividualAsQString() << "\n";
     }
+}
+
+
+void MainWindow::reportIndividualOrderedByLatencyInGenes(QList<Individual*> list, QString resultsSubdirectory, QString fileName)
+{
+    QFile file(resultsSubdirectory+"/"+fileName+".txt");
+    if (file.exists())
+    {
+        file.remove();
+    }
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+    {
+        QString msg = "No se pudo crear el archivo /tmp/"+fileName+".txt";
+        qDebug(qPrintable(msg));
+        return;
+    }
+    QTextStream out(&file);
+
+    //out << resultsSubdirectory +"/"+fileName+".txt - Individuos encontrados luego de ejecutar el algoritmo cultural: " << "\n";
+    //for(int i=0; i<list.count(); i++)
+    //{
+    //    out << list.at(i)->getIndividualAsQString() << "\n";
+    //}
+
+    // variable auxiliar para recorrer los genes del individuo
+    int aux = 1;
+
+    // lista de genes a ordenar
+    QList<Gen*> genList;
+
+    QString str;
+
+    // iterar sobre los individuos de la lista
+    for (int h=0; h<list.count();h++)
+    {
+        Individual * ind = list.at(h);
+
+        // iterar sobre el tamano del individuo
+        for (int i=0; i<individualSize; i++)
+        {
+            Gen * gen = new Gen();
+
+            //qDebug("i: %s", qPrintable(QString::number(i)));
+            // iterar sobre los parametros de cada gen
+            for (int j=0; j<4; j++)
+            {
+                //qDebug("j: %s", qPrintable(QString::number(j)));
+                if (aux == 1)
+                {
+                    //individualString.append("<");
+                    //individualString.append(QString::number(getParameter(i*4)));
+                    //individualString.append(",");
+                    //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+
+                    gen->setChannel(ind->getParameter(i*4));
+                    aux++;
+                }
+                else if (aux == 2)
+                {
+                    //individualString.append(QString::number(getParameter(i*4+1)));
+                    //individualString.append(",");
+                    //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+
+                    gen->setMinChannelTime(ind->getParameter(i*4+1));
+                    aux++;
+                }
+                else if (aux == 3)
+                {
+                    //individualString.append(QString::number(getParameter(i*4+2)));
+                    //individualString.append(",");
+                    //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+
+                    gen->setMaxChannelTime(ind->getParameter(i*4+2));
+                    aux++;
+                }
+                else if (aux == 4)
+                {
+                    //individualString.append(QString::number(getParameter(i*4+3)));
+                    //individualString.append(">");
+                    //individualString.append(",");
+                    //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+
+                    gen->setAPs(ind->getParameter(i*4+3));
+                    aux = 1;
+                }
+
+            } // fin de parametros de gen
+
+            // insertar el gen en la lista
+            genList.append(gen);
+
+        } // fin de iterar sobre el tamano del individuo
+
+        // ordenar la lista en orden ascendente de acuerdo a la latencia (F2)
+        qSort(genList.begin(), genList.end(), genLessThanLatency);
+
+
+        for(int i=genList.count(); i>0; i--)
+        {
+            for (int j=0; j<4; j++)
+            {
+                str.append(QString::number(genList.at(i-1)->getValue(j)));
+                str.append(",");
+            }
+
+        }
+        str.append(QString::number(ind->getPerformanceDiscovery()));
+        str.append(",");
+        str.append(QString::number(ind->getPerformanceLatency()));
+        str.append("\n");
+        out << str;
+        str.clear();
+        genList.clear();
+
+
+    } // fin de iterar sobre individuos
+
+
 }
 
 
