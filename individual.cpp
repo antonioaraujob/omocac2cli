@@ -357,7 +357,7 @@ QString Individual::getIndividualAsQString()
             //qDebug("j: %s", qPrintable(QString::number(j)));
             if (aux == 1)
             {
-                individualString.append("<");
+                //individualString.append("<");
                 individualString.append(QString::number(getParameter(i*4)));
                 individualString.append(",");
                 //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
@@ -380,8 +380,8 @@ QString Individual::getIndividualAsQString()
             else if (aux == 4)
             {
                 individualString.append(QString::number(getParameter(i*4+3)));
-                individualString.append(">");
-                //individualString.append(",");
+                //individualString.append(">");
+                individualString.append(",");
                 //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
                 aux = 1;
             }
@@ -389,11 +389,11 @@ QString Individual::getIndividualAsQString()
         }
     }
     //individualString.append("-");
-    individualString.append("<");
+    //individualString.append("<");
     individualString.append(QString::number(getPerformanceDiscovery()));
     individualString.append(",");
     individualString.append(QString::number(getPerformanceLatency()));
-    individualString.append(">");
+    //individualString.append(">");
     return individualString;
     // *********************************************************************************
 
