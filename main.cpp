@@ -29,7 +29,8 @@ int main(int argc, char *argv[])
     {
         // se ejecuta el algoritmo cultural una vez de acuerdo a los parametros
         // establecidos en el archivo de configuracion
-        mw.executeAlgorithm();
+        // mw.executeAlgorithm();
+        mw.executeAlgorithmRepeated();
     }
 
     qDebug("return 0");

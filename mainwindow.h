@@ -281,6 +281,11 @@ public:
      */
     void executeAlgorithm();
 
+    /**
+     * @brief Ejecuta el algoritmo cultural original repetido el numero de veces que se
+     * especifique en el archivo settings.ini
+     */
+    void executeAlgorithmRepeated();
 
     /**
      * @brief Slot para habilitar o deshabilitar el campo para introducir el valor de la

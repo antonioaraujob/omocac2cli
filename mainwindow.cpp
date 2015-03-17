@@ -337,6 +337,116 @@ void MainWindow::executeAlgorithm()
 }
 
 
+void MainWindow::executeAlgorithmRepeated()
+{
+    qDebug("MainWindow::compareAlgorithmRepeated()");
+
+    QTime timer;
+    QList<double> executionTimeList;
+
+
+
+    // ejecuciones del algoritmo original
+    for (int i=0; i<simulationRepetitions; i++)
+    {
+        timer.start();
+        executeAlgorithm();
+        executionTimeList.append(timer.elapsed());
+        QList<Individual*> list(genericAlgorithmSolutions);
+        repeatedOriginalSolutionList.append(list);
+    }
+
+    // calcular el tiempo promedio de ejecucion del algoritmo original
+    double meanExecutionTimeOriginal = getMeanExecutionTime(executionTimeList);
+    double stdExecutionTimeOriginal = getStdDeviationExecutionTime(executionTimeList, meanExecutionTimeOriginal);
+    executionTimeList.clear();
+
+    qDebug("------");
+    qDebug("Promedio de tiempo de ejecución original:");
+    qDebug(qPrintable(QString::number(meanExecutionTimeOriginal)+" ms, "+QString::number(stdExecutionTimeOriginal)));
+
+    qDebug("Promedio de numero de individuos no dominados algoritmo original:");
+    int totalIndividuals = 0;
+    for (int j=0; j<repeatedOriginalSolutionList.count(); j++)
+    {
+        totalIndividuals = totalIndividuals + repeatedOriginalSolutionList.at(j).count();
+    }
+    double meanNonDominatedIndividuals1 = totalIndividuals/repeatedOriginalSolutionList.count();
+    qDebug(qPrintable(QString::number(meanNonDominatedIndividuals1)+" individuos"));
+
+    double meanF1Original = getMeanOfObjectiveFunction(1, repeatedOriginalSolutionList, 1);
+    qDebug("Promedio de Fo1 original: %s", qPrintable(QString::number(meanF1Original)));
+    qDebug("STD de Fo1 original: %s", qPrintable(QString::number(getStandardDeviation(meanF1Original, 1, repeatedOriginalSolutionList, 1))));
+    double meanF2Original = getMeanOfObjectiveFunction(2, repeatedOriginalSolutionList, 1);
+    qDebug("Promedio de Fo2 original: %s", qPrintable(QString::number(meanF2Original)));
+    qDebug("STD de Fo2 original: %s", qPrintable(QString::number(getStandardDeviation(meanF2Original, 2, repeatedOriginalSolutionList, 1))));
+
+    // cadena con el nombre del subdirectorio que almacenara los resultados
+    QString resultsDirectory = createResultsDirectory();
+
+    QFile file(resultsDirectory+"/resultadosFinalesEjecucionRepetida.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text /*| QIODevice::Append*/))
+    {
+        //QMessageBox msg;
+        //msg.setText("No se pudo abrir el archivo /tmp/resultadosFinalesComparacion.txt para escribir \nresultados de la comparacion de algoritmos.");
+        //msg.exec();
+        qDebug("No se pudo abrir el archivo /tmp/resultadosFinalesEjecucionRepetida.txt para escribir \nresultados de la ejecucion repetida");
+        return;
+    }
+    QTextStream out(&file);
+
+    out << "Resultados de ejecucion repetida de algoritmo original" << endl;
+    out << "Promedio de tiempo de ejecución original: " << QString::number(meanExecutionTimeOriginal) << " ms, std: " <<
+           QString::number(stdExecutionTimeOriginal) << endl;
+
+    out << endl;
+    out << "Promedio de numero de individuos no dominados algoritmo original: " << QString::number(meanNonDominatedIndividuals1) << " individuos" << endl;
+
+    out << endl;
+    out << "Promedio de Fo1 original: " << QString::number(meanF1Original) << endl;
+    out << "STD de Fo1 original: " << QString::number(getStandardDeviation(meanF1Original, 1, repeatedOriginalSolutionList, 1)) << endl;
+    out << "Promedio de Fo2 original: " << QString::number(meanF2Original) << endl;
+    out << "STD de Fo2 original: " << QString::number(getStandardDeviation(meanF2Original, 2, repeatedOriginalSolutionList, 1)) << endl;
+    out << endl;
+
+
+    // prueba de obtener los no dominados de todas las ejecuciones del algoritmo
+    QList<Individual*> myList = getNonDominatedIndivualsFromRepetitions(true);
+    qDebug("--------");
+    qDebug("individuos no dominados del algoritmo original: %s", qPrintable(QString::number(myList.count())));
+/*
+    QVector<double> discoveryParetoOriginal(myList.count()), latencyParetoOriginal(myList.count());
+    Individual * paretoIndividual;
+    int vectorPosition = 0;
+
+    for (int i=0; i<myList.count();i++)
+    {
+        paretoIndividual = myList.at(i);
+        discoveryParetoOriginal[vectorPosition] = paretoIndividual->getPerformanceDiscovery();
+        latencyParetoOriginal[vectorPosition] = paretoIndividual->getPerformanceLatency();
+        vectorPosition++;
+    }
+*/
+
+    // ordenar la lista en orden ascendente de acuerdo a la latencia (F2)
+    qSort(myList.begin(), myList.end(), xLessThanLatency);
+
+
+    // escribir en un archivo los individuos del frente de pareto encontrado en un archivo
+    reportIndividualAsFile(myList, resultsDirectory, "individuosFrenteParetoOriginal");
+
+    // escribir en un archivo los individuos del frente de pareto encontrado ordenados por latencia en genes en un archivo
+    reportIndividualOrderedByLatencyInGenes(myList, resultsDirectory, "individuosFrenteParetoOriginalPorLatencia");
+
+
+    // colocar las cadenas en la pestana de cadenas de la interfaz grafica
+    //populateAListView(myList, ui->listViewPFOriginal);
+
+    myList.clear();
+
+}
+
+
 void MainWindow::compareAlgorithmRepeated()
 {
 
