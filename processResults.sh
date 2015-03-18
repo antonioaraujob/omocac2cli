@@ -19,6 +19,7 @@ echo "\documentclass{article}
 
 \usepackage{tabularx}
 \usepackage{tablefootnote}
+\usepackage[table]{xcolor}
 
 \title{Resultados de ejecucion}
 %\author{PGCOMP}
@@ -31,6 +32,9 @@ echo "\documentclass{article}
 \centering
 \caption{Channel sequences}
 \label{tab:sequences}
+
+\definecolor{light-gray}{gray}{0.95}
+\rowcolors{1}{white}{light-gray}
 
 \begin{tabularx}{\textwidth}{XXXXXXXXXXXrr}
 
@@ -108,7 +112,7 @@ echo "
 " >> /tmp/salida.tex
 
 
-# procesar cada linea de secuencia de canales del archivo individuosFrenteParetoOriginalPorLatencia.txt
+# escribir la configuracion utilizada para la ejecucion
 awk ' 
 
 BEGIN {}  
