@@ -301,6 +301,7 @@ void MainWindow::executeAlgorithm()
     //storeExecutionSolution();
 
     // *****************************************************************************
+    /*
     if (!doComparationOfAlgorithms)
     {
         // escribir los resultados de la simulacion
@@ -330,6 +331,7 @@ void MainWindow::executeAlgorithm()
         // escribir en un archivo los individuos del frente de pareto encontrado ordenados por latencia en genes en un archivo
         reportIndividualOrderedByLatencyInGenes(finalResultsList, resultsDirectory, "individuosFrenteParetoOriginalPorLatencia");
     }
+    */
     // *****************************************************************************
 
 
