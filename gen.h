@@ -39,14 +39,35 @@ public:
      */
     int getLatency();
 
+    /**
+     * @brief getValue
+     * @param index
+     * @return
+     */
     int getValue(int index);
 
+    /**
+     * @brief asigna el valor del canal del gen
+     * @param c canal a asignar
+     */
     void setChannel(int c);
 
+    /**
+     * @brief asigna el valor de minCHannelTime del gen
+     * @param min minCHannelTime a asignar
+     */
     void setMinChannelTime(int min);
 
+    /**
+     * @brief asigna el valor de maxChannelTime del gen
+     * @param max maxChannelTime a asignar
+     */
     void setMaxChannelTime(int max);
 
+    /**
+     * @brief asigna el valor de APs del gen
+     * @param aps APs a asignar
+     */
     void setAPs(int aps);
 
 

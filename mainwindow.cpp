@@ -33,6 +33,17 @@ inline static bool genLessThanLatency(Gen *g1, Gen *g2)
     return g1->getLatency() < g2->getLatency();
 }
 
+/**
+ * @brief funcion de comparacion de genes con respecto al valor de APs descubiertos
+ * @param g1 gen1 a comparar
+ * @param g2 gen2 a comparar
+ * @return
+ */
+inline static bool genLessThanAPs(Gen *g1, Gen *g2)
+{
+    return g1->getValue(3) < g2->getValue(3);
+}
+
 
 /**
  * @brief Define e inicializa el miembro estatico individualSize
@@ -440,6 +451,14 @@ void MainWindow::executeAlgorithmRepeated()
     // escribir en un archivo los individuos del frente de pareto encontrado ordenados por latencia en genes en un archivo
     reportIndividualOrderedByLatencyInGenes(myList, resultsDirectory, "individuosFrenteParetoOriginalPorLatencia");
 
+    // escribir en un archivo los individuos del frente de pareto encontrado ordenados por APs encontrados en genes de
+    // forma ascendente
+    reportIndividualOrderedByApInGenes(myList, resultsDirectory, "individuosFrenteParetoOriginalPorAPsAscendente", true);
+
+    // escribir en un archivo los individuos del frente de pareto encontrado ordenados por APs encontrados en genes de
+    // forma descendente
+    reportIndividualOrderedByApInGenes(myList, resultsDirectory, "individuosFrenteParetoOriginalPorAPsDescendente", false);
+
 
     // colocar las cadenas en la pestana de cadenas de la interfaz grafica
     //populateAListView(myList, ui->listViewPFOriginal);
@@ -801,6 +820,140 @@ void MainWindow::reportIndividualOrderedByLatencyInGenes(QList<Individual*> list
 
 
 }
+
+
+void MainWindow::reportIndividualOrderedByApInGenes(QList<Individual*> list, QString resultsSubdirectory, QString fileName, bool ascending)
+{
+    QFile file(resultsSubdirectory+"/"+fileName+".txt");
+    if (file.exists())
+    {
+        file.remove();
+    }
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+    {
+        QString msg = "No se pudo crear el archivo /tmp/"+fileName+".txt";
+        qDebug(qPrintable(msg));
+        return;
+    }
+    QTextStream out(&file);
+
+    // variable auxiliar para recorrer los genes del individuo
+    int aux = 1;
+
+    // lista de genes a ordenar
+    QList<Gen*> genList;
+
+    QString str;
+
+    // iterar sobre los individuos de la lista
+    for (int h=0; h<list.count();h++)
+    {
+        Individual * ind = list.at(h);
+
+        // iterar sobre el tamano del individuo
+        for (int i=0; i<individualSize; i++)
+        {
+            Gen * gen = new Gen();
+
+            //qDebug("i: %s", qPrintable(QString::number(i)));
+            // iterar sobre los parametros de cada gen
+            for (int j=0; j<4; j++)
+            {
+                //qDebug("j: %s", qPrintable(QString::number(j)));
+                if (aux == 1)
+                {
+                    //individualString.append("<");
+                    //individualString.append(QString::number(getParameter(i*4)));
+                    //individualString.append(",");
+                    //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+
+                    gen->setChannel(ind->getParameter(i*4));
+                    aux++;
+                }
+                else if (aux == 2)
+                {
+                    //individualString.append(QString::number(getParameter(i*4+1)));
+                    //individualString.append(",");
+                    //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+
+                    gen->setMinChannelTime(ind->getParameter(i*4+1));
+                    aux++;
+                }
+                else if (aux == 3)
+                {
+                    //individualString.append(QString::number(getParameter(i*4+2)));
+                    //individualString.append(",");
+                    //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+
+                    gen->setMaxChannelTime(ind->getParameter(i*4+2));
+                    aux++;
+                }
+                else if (aux == 4)
+                {
+                    //individualString.append(QString::number(getParameter(i*4+3)));
+                    //individualString.append(">");
+                    //individualString.append(",");
+                    //qDebug("aux %s: %s", qPrintable(QString::number(aux)), qPrintable(individualString));
+
+                    gen->setAPs(ind->getParameter(i*4+3));
+                    aux = 1;
+                }
+
+            } // fin de parametros de gen
+
+            // insertar el gen en la lista
+            genList.append(gen);
+
+        } // fin de iterar sobre el tamano del individuo
+
+        // ordenar la lista en orden de acuerdo al numero de ap
+        qSort(genList.begin(), genList.end(), genLessThanAPs);
+
+        if (ascending)
+        {
+            // recorrer la lista de genes de forma ascendente
+            for(int i=0; i<genList.count(); i++)
+            {
+                for (int j=0; j<4; j++)
+                {
+                    str.append(QString::number(genList.at(i)->getValue(j)));
+                    str.append(",");
+                }
+
+            }
+
+
+        }
+        else // orden descendente
+        {
+            // recorrer la lista de genes de forma descendente
+            for(int i=genList.count(); i>0; i--)
+            {
+                for (int j=0; j<4; j++)
+                {
+                    str.append(QString::number(genList.at(i-1)->getValue(j)));
+                    str.append(",");
+                }
+
+            }
+        }
+
+
+
+        str.append(QString::number(ind->getPerformanceDiscovery()));
+        str.append(",");
+        str.append(QString::number(ind->getPerformanceLatency()));
+        str.append("\n");
+        out << str;
+        str.clear();
+        genList.clear();
+
+
+    } // fin de iterar sobre individuos
+
+
+}
+
 
 
 double MainWindow::getMeanExecutionTime(QList<double> l)
