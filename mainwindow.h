@@ -4,6 +4,8 @@
 #include "simulation.h"
 //#include "qcustomplot.h"
 
+#include "gen.h"
+
 
 #include <QSettings>
 
@@ -276,6 +278,12 @@ public:
      */
     void reportIndividualOrderedByApInGenes(QList<Individual*> list, QString resultsSubdirectory, QString fileName, bool ascending=true);
 
+    /**
+     * @brief reordena la lista de genes pasada como argumento con respecto
+     * @param list lista de genes a ordenar
+     * @param ascending bandera para especificar si el orden es ascendente o descendente
+     */
+    QList<Gen*> reorderAP(QList<Gen*> originalList, bool ascending=true);
 
     /**
      * @brief Funcion para colocar las cadenas de individuos en los listview de la

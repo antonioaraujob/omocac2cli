@@ -8,7 +8,7 @@
 
 #include "individual.h"
 #include "simulation.h"
-#include "gen.h"
+
 
 
 /**
@@ -911,12 +911,17 @@ void MainWindow::reportIndividualOrderedByApInGenes(QList<Individual*> list, QSt
 
         if (ascending)
         {
+
+
+            QList<Gen*> reorderListByAP = reorderAP(genList, true);
+
             // recorrer la lista de genes de forma ascendente
-            for(int i=0; i<genList.count(); i++)
+            //for(int i=0; i<genList.count(); i++)
+            for(int i=0; i<reorderListByAP.count(); i++)
             {
                 for (int j=0; j<4; j++)
                 {
-                    str.append(QString::number(genList.at(i)->getValue(j)));
+                    str.append(QString::number(reorderListByAP.at(i)->getValue(j)));
                     str.append(",");
                 }
 
@@ -927,6 +932,7 @@ void MainWindow::reportIndividualOrderedByApInGenes(QList<Individual*> list, QSt
         else // orden descendente
         {
             // recorrer la lista de genes de forma descendente
+            /*
             for(int i=genList.count(); i>0; i--)
             {
                 for (int j=0; j<4; j++)
@@ -936,8 +942,27 @@ void MainWindow::reportIndividualOrderedByApInGenes(QList<Individual*> list, QSt
                 }
 
             }
-        }
+            */
+            QList<Gen*> invertedList;
+            Gen * gen;
+            for(int i=genList.count(); i>0; i--)
+            {
+                gen = genList.at(i-1);
+                invertedList.append(gen);
+            }
 
+            QList<Gen*> reorderListByAP = reorderAP(invertedList, true);
+            for(int i=0; i<reorderListByAP.count(); i++)
+            {
+                for (int j=0; j<4; j++)
+                {
+                    str.append(QString::number(reorderListByAP.at(i)->getValue(j)));
+                    str.append(",");
+                }
+
+            }
+
+        }
 
 
         str.append(QString::number(ind->getPerformanceDiscovery()));
@@ -954,7 +979,96 @@ void MainWindow::reportIndividualOrderedByApInGenes(QList<Individual*> list, QSt
 
 }
 
+QList<Gen*> MainWindow::reorderAP(QList<Gen*> originalList, bool ascending)
+{
+    int i=0;
 
+
+    QList<Gen*> auxList;
+    QList<Gen*> orderedList;
+
+    Gen * gen1;
+
+
+    while(i<originalList.count())
+    {
+
+        if (auxList.isEmpty())
+        {
+            gen1 = originalList.at(i);
+            auxList.append(gen1);
+            i++;
+            continue;
+        }
+        gen1 = originalList.at(i);
+        if (gen1->getValue(3)== auxList.at(auxList.count()-1)->getValue(3))
+        {
+            if ((i+1)==originalList.count())
+            {
+                auxList.append(gen1);
+                qSort(auxList.begin(), auxList.end(), genLessThanLatency);
+                for (int i=0;i<auxList.count();i++)
+                {
+                    orderedList.append(auxList.at(i));
+                }
+            }
+            else
+            {
+                auxList.append(gen1);
+            }
+        }
+        else
+        {
+            // verificar si auxList tiene un solo elemento
+            if (auxList.count() == 1)
+            {
+                if ((i+1)==originalList.count())
+                {
+                    orderedList.append(auxList.at(0));
+                    orderedList.append(gen1);
+                    auxList.clear();
+
+                }
+                else
+                {
+                    orderedList.append(auxList.at(0));
+                    auxList.clear();
+                    auxList.append(gen1);
+                }
+
+            }
+            else // la lista auxList tiene varios elementos entonces ordenarlos
+            {
+                if ((i+1)==originalList.count())
+                {
+                    qSort(auxList.begin(), auxList.end(), genLessThanLatency);
+                    for (int i=0;i<auxList.count();i++)
+                    {
+                        orderedList.append(auxList.at(i));
+                    }
+                    auxList.clear();
+                    orderedList.append(gen1);
+                }
+                else
+                {
+                    qSort(auxList.begin(), auxList.end(), genLessThanLatency);
+                    for (int i=0;i<auxList.count();i++)
+                    {
+                        orderedList.append(auxList.at(i));
+                    }
+                    auxList.clear();
+                    auxList.append(gen1);
+                }
+
+
+            }
+        }
+        i++;
+
+    }
+
+    return orderedList;
+}
 
 double MainWindow::getMeanExecutionTime(QList<double> l)
 {
