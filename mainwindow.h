@@ -62,6 +62,11 @@ private:
     bool doDirectedMutation;
 
     /**
+     * @brief Verdadero si se debe ejecutar el algoritmo original
+     */
+    bool doOriginalAlgorithm;
+
+    /**
      * @brief Numero de repeticiones para ejecutar la comparacion de algoritmos
      */
     int simulationRepetitions;
@@ -308,6 +313,12 @@ public:
     void executeAlgorithmRepeated();
 
     /**
+     * @brief Ejecuta el algoritmo cultural modificadop repetido el numero de veces que se
+     * especifique en el archivo settings.ini
+     */
+    void executeModificatedAlgorithm();
+
+    /**
      * @brief Slot para habilitar o deshabilitar el campo para introducir el valor de la
      *  probabilidad de mutacion dirigida
      * @param state Estado del check box
@@ -366,6 +377,11 @@ public:
      */
     bool getDoComparationOfAlgorithms();
 
+    /**
+     * @brief Retorna verdadero si se debe realizar la ejecucion del algoritmo original
+     * @return verdadero si se debe realizar la ejecucion del algoritmo original
+     */
+    bool getDoOriginalAlgorithm();
     /**
      * @brief Retorna el tamano del individuo con respecto a la secuencia de canales
      * @return tamano del individuo con respecto a la secuencia de canales

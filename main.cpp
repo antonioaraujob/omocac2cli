@@ -25,12 +25,16 @@ int main(int argc, char *argv[])
         // configuracion
         mw.compareAlgorithmRepeated();
     }
-    else
+    else if (mw.getDoOriginalAlgorithm())
     {
         // se ejecuta el algoritmo cultural una vez de acuerdo a los parametros
         // establecidos en el archivo de configuracion
         // mw.executeAlgorithm();
         mw.executeAlgorithmRepeated();
+    }
+    else // ejecutarMutacionDirigida
+    {
+        mw.executeModificatedAlgorithm();
     }
 
     qDebug("return 0");
