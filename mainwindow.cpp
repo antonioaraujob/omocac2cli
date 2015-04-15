@@ -56,6 +56,12 @@ int MainWindow::individualSize = 0;
 
 bool MainWindow::emulateScanning = true;
 
+/**
+ * @brief MainWindow::scanningCampaing
+ */
+ScanningCampaing * MainWindow::scanningCampaing = 0;
+
+
 MainWindow::MainWindow()
 {
     // lectura de los parametros del algoritmo cultural a partir del archivo ini
@@ -103,6 +109,16 @@ MainWindow::MainWindow()
 
 
     emulateScanning = settings.value("emularScanning").toBool();
+
+    // base de datos sqlite
+    QString database("test_18.1.db");
+
+    // tipo de experimento para extraer las muestras: full -> full scanning
+    QString experiment("full");
+    scanningCampaing = new ScanningCampaing(database.toStdString(),experiment.toStdString());
+    scanningCampaing->init();
+
+    getRandomScan(11, 5, 20);
 
     qDebug("salida");
 
@@ -1496,4 +1512,9 @@ int MainWindow::getIndividualSize()
 bool MainWindow::getEmulateScanning()
 {
     return emulateScanning;
+}
+
+ScanningCampaing::ScanResults MainWindow::getRandomScan(int channel, int minChannelTime, int maxChannelTime)
+{
+    return scanningCampaing->randomScan(channel, minChannelTime, maxChannelTime);
 }

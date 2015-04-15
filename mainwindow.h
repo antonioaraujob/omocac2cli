@@ -6,6 +6,7 @@
 
 #include "gen.h"
 
+#include "scan.h"
 
 #include <QSettings>
 
@@ -120,6 +121,11 @@ private:
      */
     static bool emulateScanning;
 
+    /**
+     * @brief Objeto ScanningCampaing que simula la campana de scanning para obtener valores APs de acuerdo
+     * a MinChannelTime y MaxChannelTime
+     */
+    static ScanningCampaing * scanningCampaing;
 
 public:
 
@@ -394,6 +400,15 @@ public:
      * @return si se debe utilizar la emulacion de scanning de acuerdo a la campana de mediciones
      */
     static bool getEmulateScanning();
+
+    /**
+     * @brief getRandomScan
+     * @param channel
+     * @param minChannelTime
+     * @param maxChannelTime
+     * @return
+     */
+    static ScanningCampaing::ScanResults getRandomScan(int channel, int minChannelTime, int maxChannelTime);
 
 };
 

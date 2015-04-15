@@ -28,15 +28,15 @@ Individual::Individual(int numberOfApsDeployed)
     // base de datos sqlite
     //QString database("/home/antonio/Copy/2014/pgcomp/ia/gridCells/gridCells/test_18.1.db");
     //QString database("/home/antonio/desarrollo/iaa/git/omocac/test_18.1.db");
-    QString database("test_18.1.db");
+    //QString database("test_18.1.db");
 
     // tipo de experimento para extraer las muestras: full -> full scanning
-    QString experiment("full");
+    //QString experiment("full");
 
     //Scan scan(database.toStdString(),experiment.toStdString());
-    ScanningCampaing scan(database.toStdString(),experiment.toStdString());
+    //ScanningCampaing scan(database.toStdString(),experiment.toStdString());
 
-    scan.init();
+    //scan.init();
 
     //Scan::ScanResults results = scan.execute(11, 10, 30);
     ScanningCampaing::ScanResults results;
@@ -66,7 +66,8 @@ Individual::Individual(int numberOfApsDeployed)
         //results = scan.execute(randomChannel, minChannelTime, maxChannelTime);
 
         // nueva funcion para obtener el numero de AP de acuerdo a la campana de medicion
-        results = scan.randomScan(randomChannel, minChannelTime, maxChannelTime);
+        //results = scan.randomScan(randomChannel, minChannelTime, maxChannelTime);
+        results = MainWindow::getRandomScan(randomChannel, minChannelTime, maxChannelTime);
 
         //qDebug("**numero de APs encontrados en el canal %d: %d",randomChannel, results.size());
         //std::cout << " numero de APs encontrados en el canal: " << randomChannel << ": " << results.size() << std::endl;
