@@ -47,6 +47,8 @@ Individual::Individual(int numberOfApsDeployed)
     double minChannelTime = 0;
     double maxChannelTime = 0;
 
+    int apsFound = 0;
+
 
     // iterar de acuerdo al tamano del individuo
     //for (int i=0; i<11; i++)
@@ -67,13 +69,14 @@ Individual::Individual(int numberOfApsDeployed)
 
         // nueva funcion para obtener el numero de AP de acuerdo a la campana de medicion
         //results = scan.randomScan(randomChannel, minChannelTime, maxChannelTime);
-        results = MainWindow::getRandomScan(randomChannel, minChannelTime, maxChannelTime);
+        apsFound = MainWindow::getAPs(randomChannel, minChannelTime, maxChannelTime);
 
         //qDebug("**numero de APs encontrados en el canal %d: %d",randomChannel, results.size());
         //std::cout << " numero de APs encontrados en el canal: " << randomChannel << ": " << results.size() << std::endl;
         //qDebug("**scan.execute(%d, %f, %f)=%d",randomChannel, minChannelTime, maxChannelTime, results.size());
 
-        parametersList.append(results.size());
+        //parametersList.append(results.size());
+        parametersList.append(apsFound);
 
         wonMatchesCounter = 0;
     }

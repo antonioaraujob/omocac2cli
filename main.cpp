@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    qDebug("hola mundo");
+    //qDebug("hola mundo");
 
     MainWindow mw;
 
