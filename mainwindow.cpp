@@ -120,7 +120,7 @@ MainWindow::MainWindow()
     scanningCampaing->init();
     scanningCampaing->prepareIRD();
 
-    getAPs(11, 10, 20);
+    //getAPs(11, 10, 20);
 
     qDebug("salida");
 
@@ -1525,5 +1525,10 @@ ScanningCampaing::ScanResults MainWindow::getRandomScan(int channel, int minChan
 int MainWindow::getAPs(int channel, int minChannelTime, int maxChannelTime)
 {
 
-    return scanningCampaing->getAP(channel, minChannelTime, maxChannelTime);
+    int low = 1;
+    int high = 100;
+    int random = qrand() % ((high + 1) - low) + low;
+
+    //return scanningCampaing->getAP(channel, minChannelTime, maxChannelTime, random);
+    return 1;
 }

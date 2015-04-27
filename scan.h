@@ -156,6 +156,11 @@ class ScanningCampaing {
       std::random_device rd;
       gen = new std::mt19937(rd());
       rand = new std::uniform_int_distribution<>(0, scans.size() - 1);
+
+
+      // asignar el numero de scanning ejecutados
+      numberOfScannings = 100;
+      randomScanningDistribution = new std::uniform_int_distribution<>(1, numberOfScannings);
     }
 
 
@@ -388,12 +393,19 @@ class ScanningCampaing {
 
     int getAP(int channel, double min, double max){
         //printf("canal: %d, min: %f, max: %f \n", channel, min, max);
+//return 1;
+
 
         int scanningNumber = 100;
-        std::random_device rd;
-        std::mt19937* gen = new std::mt19937(rd());
-        std::uniform_int_distribution<> ird_rand(1, scanningNumber);
+
+        //std::random_device rd;
+        //std::mt19937* gen = new std::mt19937(rd());
+        std::uniform_int_distribution<> ird_rand(1, numberOfScannings);
         int index = ird_rand(*gen);
+        //printf("index: %d\n",index);
+
+
+        //int index = getRandomScanning();
         //printf("index: %d\n",index);
 
         // tiempo de respuesta
@@ -447,6 +459,11 @@ class ScanningCampaing {
                 first = false;
             }
         }
+    }
+
+    int getRandomScanning() {
+        int indexOfScanning = (*randomScanningDistribution)(*gen);
+        return indexOfScanning;
     }
 
   private:
@@ -525,6 +542,15 @@ class ScanningCampaing {
     std::uniform_int_distribution<>* rand;
     std::mt19937* gen;
     std::map<int, std::map<int, std::vector<int>>> ird_times;
+
+    // numero de scanning ejecutados
+    unsigned int numberOfScannings;
+
+    // puntero a distribucion uniforme entera para obtener un scanning aleatorio entre
+    // 1 y el numero de scannings ejecutados
+    std::uniform_int_distribution<>* randomScanningDistribution;
+
+
 };
 
 #endif
