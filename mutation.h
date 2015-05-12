@@ -55,9 +55,11 @@ public:
      *
      * @param population poblacion sobre la cual se ejecuta el proceso de mutacion
      * @param std desviacion estandar de la variable aleatoria normal
+     * @param std desviacion estandar de la variable aleatoria normal MinChannelTime
+     * @param std desviacion estandar de la variable aleatoria normal MaxChannelTime
      * @param deployedAp numero de AP desplegados en el entorno
      */
-    void doMutation(QList<Individual *> population, double std, int deployedAp);
+    void doMutation(QList<Individual *> population, double std, double stdMin, double stdMax, int deployedAp);
 
     /**
      * @brief Ejecuta el proceso de mutacion dirigida sobre la base del conocimiento normativo
@@ -65,11 +67,14 @@ public:
      *
      * @param population poblacion sobre la cual se ejecuta el proceso de mutacion
      * @param std desviacion estandar de la variable aleatoria normal
+     * @param std desviacion estandar de la variable aleatoria normal MinChannelTime
+     * @param std desviacion estandar de la variable aleatoria normal MaxChannelTime
      * @param deployedAp numero de AP desplegados en el entorno
      * @param dMutationProbability
      * @param grid Puntero a la rejilla
      */
-    void doDirectedMutation(QList<Individual *> population, double std, int deployedAp, double dMutationProbability, NormativeGrid * grid);
+    void doDirectedMutation(QList<Individual *> population, double std, double stdMin, double stdMax, int deployedAp,
+                            double dMutationProbability, NormativeGrid * grid);
 
     /**
      * @brief Retorna la nueva poblacion luego de la variacion.
@@ -99,12 +104,14 @@ public:
      * @param index indice del parametro a mutar
      * @param mean media de la distribucion normal
      * @param std desviacion estandar de la distribucion normal
+     * @param std desviacion estandar de la distribucion normal MinChannelTime
+     * @param std desviacion estandar de la distribucion normal MaxChannelTime
      * @param currentParameterValue valor actual del parametro a mutar
      * @param offspring Individuo hijo sobre el cual se mutan parametros
      *
      * @return valor del parametro mutado
      */
-    int mutateIndividualParameter(int index, int mean, double std, double currentParameterValue, Individual *offspring);
+    int mutateIndividualParameter(int index, int mean, double std, double stdMin, double stdMax, double currentParameterValue, Individual *offspring);
 
     /**
      * @brief Retorna verdadero si el parametro a revisar de un individuo corresponde a un canal
@@ -187,7 +194,7 @@ public:
      * @param std desviacion estandar de la distribucion normal (parametro del algoritmo)
      * @param deployedAp numero de APs desplegados
      */
-    void originalMutation(Individual * father, double std, int deployedAp);
+    void originalMutation(Individual * father, double std, double stdMin, double stdMax, int deployedAp);
 
     /**
      * @brief Ejecuta la mutacion dirigida
@@ -195,7 +202,7 @@ public:
      * @param grid Puntero a la rejilla para observar las Cell a utilizar en la mutacion
      * @param father Individuo padre para la mutacion
      */
-    void directedMutation(NormativeGrid * grid, Individual * father);
+    void directedMutation(NormativeGrid * grid, Individual * father, double stdMin, double stdMax);
 
     /**
      * @brief Asigna la desviacion estandar para la mutacion

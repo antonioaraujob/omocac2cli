@@ -77,6 +77,12 @@ MainWindow::MainWindow()
     standarDeviation = settings.value("desviacionEstandar").toInt();
     qDebug(qPrintable(QString::number(standarDeviation)));
 
+    standarDeviationMinChannelTime = settings.value("desviacionEstandarMinChannelTime").toInt();
+    qDebug(qPrintable(QString::number(standarDeviationMinChannelTime)));
+
+    standarDeviationMaxChannelTime = settings.value("desviacionEstandarMaxChannelTime").toInt();
+    qDebug(qPrintable(QString::number(standarDeviationMaxChannelTime)));
+
     externalFileSize = settings.value("tamanoArchivoExterno").toInt();
     qDebug(qPrintable(QString::number(externalFileSize)));
 
@@ -151,6 +157,8 @@ void MainWindow::executeAlgorithm()
                                 updateFrequency,
                                 matchesPerIndividual,
                                 standarDeviation,
+                                standarDeviationMinChannelTime,
+                                standarDeviationMaxChannelTime,
                                 25,
                                 doDirectedMutation,
                                 mutationProbability);

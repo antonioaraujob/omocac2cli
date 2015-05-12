@@ -33,6 +33,17 @@ private:
     int standarDeviation;
 
     /**
+     * @brief Desviacion estandar de MinChannelTime
+     */
+    int standarDeviationMinChannelTime;
+
+    /**
+     * @brief Desviacion estandar de MaxChannelTime
+     */
+    int standarDeviationMaxChannelTime;
+
+
+    /**
      * @brief Tamano maximo del archivo externo
      */
     int externalFileSize;

@@ -73,6 +73,18 @@ private:
     int stdDeviation;
 
     /**
+     * @brief Desviacion estandar para el proceso de mutacion gausiana
+     * de MinChannelTime
+     */
+    int stdDeviationMinChannelTime;
+
+    /**
+     * @brief Desviacion estandar para el proceso de mutacion gausiana
+     * de MaxChannelTime
+     */
+    int stdDeviationMaxChannelTime;
+
+    /**
      * @brief Numero de APs desplegados en la simulacion
      */
     int deployedAPs;
@@ -151,6 +163,8 @@ public:
      * normativa fenotipica
      * @param matches numero de torneos por individuo
      * @param stdDev desviacion estandar de la distribucion normal para la mutacion gausiana
+     * @param stdDev desviacion estandar de la distribucion normal para la mutacion gausiana MinChannelTime
+     * @param stdDev desviacion estandar de la distribucion normal para la mutacion gausiana MaxChannelTime
      * @param aps numero de APs desplegados en el entorno
      * @param directedMutation Verdadero si se utilizara la mutacion dirigida
      * @param directedMutationProbability Probabilidad de ocurrencia de la mutacion dirigida
@@ -158,7 +172,7 @@ public:
      *
      */
     Simulation(int population, int extFileSize, int generations, int subintervalsGrid, int genNormative,
-               int matches, int stdDev, int aps, bool dMutation, double dMutationProbability);
+               int matches, int stdDev, int stdDevMin, int stdDevMax, int aps, bool dMutation, double dMutationProbability);
 
     /**
      * @brief Destructor de la clase

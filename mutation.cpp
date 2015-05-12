@@ -38,7 +38,7 @@ Mutation::~Mutation()
 
 }
 
-void Mutation::doMutation(QList<Individual *> population, double std, int deployedAp)
+void Mutation::doMutation(QList<Individual *> population, double std, double stdMin, double stdMax, int deployedAp)
 {
     newPopulation.clear();
 
@@ -59,7 +59,8 @@ void Mutation::doMutation(QList<Individual *> population, double std, int deploy
         // crear un individuo (offspring) y mutar todos sus parametros
         for (int i=0; i<father->getNumberOfParameters(); i++)
         {
-            newParameterValue = mutateIndividualParameter(i, 0 /*father->getParameter(i)*/,std, father->getParameter(i), offspring);
+            newParameterValue = mutateIndividualParameter(i, 0 /*father->getParameter(i)*/,std, stdMin, stdMax,
+                                                          father->getParameter(i), offspring);
             offspring->setParameter(i, newParameterValue);
         }
         // se muto el offspring ahora limpiar el diccionario de canales usados
@@ -84,7 +85,7 @@ void Mutation::doMutation(QList<Individual *> population, double std, int deploy
 }
 
 
-void Mutation::doDirectedMutation(QList<Individual *> population, double std,
+void Mutation::doDirectedMutation(QList<Individual *> population, double std, double stdMin, double stdMax,
                                   int deployedAp, double dMutationProbability, NormativeGrid * grid)
 {
     qDebug("Mutation::doDirectedMutation con probabilidad %f", dMutationProbability);
@@ -112,7 +113,7 @@ void Mutation::doDirectedMutation(QList<Individual *> population, double std,
 
             // hacer la mutacion dirigida
             // escribir una funcion
-            directedMutation(grid, father);
+            directedMutation(grid, father, stdMin, stdMax);
 
             // agregar el father
             //newPopulation.append(father);
@@ -121,7 +122,7 @@ void Mutation::doDirectedMutation(QList<Individual *> population, double std,
         {
             // hacer la mutacion gausiana con el papa como patron
             // escribir una funcion
-            originalMutation(father, std, deployedAp);
+            originalMutation(father, std, stdMin, stdMax, deployedAp);
         }
 
     }
@@ -144,7 +145,8 @@ double Mutation::getRandomUniform()
     return qrand()/double(RAND_MAX);
 }
 
-int Mutation::mutateIndividualParameter(int index, int mean, double std, double currentParameterValue, Individual * offspring)
+int Mutation::mutateIndividualParameter(int index, int mean, double std, double stdMin, double stdMax,
+                                        double currentParameterValue, Individual * offspring)
 {
     // mean representa el parametro sobre el cual se va a mutar
     // std la desviacion estandar de la distribucion normal
@@ -156,6 +158,10 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
     generator.seed(seed);
 
     std::normal_distribution<double>  distribution(mean,std);
+
+    std::normal_distribution<double>  minChannelTimeDistribution(mean, stdMin);
+
+    std::normal_distribution<double>  maxChannelTimeDistribution(mean, stdMax);
 
     double yi = distribution(generator);
 
@@ -185,24 +191,20 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
     else if (isThisParameterAMinChannelTime(index, offspring->getIndividualSize()))
     {
         //qDebug("   isThisParameterAMinChannelTime(index)");
-        intYi = intYi + currentParameterValue;
-        //if (intYi < 0)
-        if (intYi <= 0)
+        int randomValue = qRound(minChannelTimeDistribution(generator));
+        intYi = randomValue + currentParameterValue;
+        if (intYi <= 3)
         {
-            //intYi = 0;
             //qDebug("   el minChannelTime mutado esta por debajo del limite (index %d)", index);
-
-            while(intYi <=0)
+            while(intYi <=3)
             {
-                yi = distribution(generator);
+                yi = minChannelTimeDistribution(generator);
                 intYi = qRound(yi);
             }
-
-
         }
-        else if (intYi > 10)
+        else if (intYi > 12)
         {
-            intYi = 10;
+            intYi = 12;
             //qDebug("   el minChannelTime mutado esta por encima del limite (index %d)", index);
         }
 
@@ -212,15 +214,16 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
     else if (isThisParameterAMaxChannelTime(index, offspring->getIndividualSize()))
     {
         //qDebug("   isThisParameterAMaxChannelTime(index)");
-        intYi = intYi + currentParameterValue;
+        int randomValue = qRound(maxChannelTimeDistribution(generator));
+        intYi = randomValue + currentParameterValue;
         if (intYi < 10)
         {
             intYi = 10;
             //qDebug("   el maxChannelTime mutado esta por debajo del limite (index %d)", index);
         }
-        else if (intYi > 100)
+        else if (intYi > 150)
         {
-            intYi = 100;
+            intYi = 150;
             //qDebug("   el maxChannelTime mutado esta por encima del limite (index %d)", index);
         }
 
@@ -565,7 +568,7 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
 }
 
 
-void Mutation::originalMutation(Individual * father, double std, int deployedAp)
+void Mutation::originalMutation(Individual * father, double std, double stdMin, double stdMax, int deployedAp)
 {
     qDebug("Mutation::originalMutation(Individual * father)");
 
@@ -583,7 +586,8 @@ void Mutation::originalMutation(Individual * father, double std, int deployedAp)
     // crear un individuo (offspring) y mutar todos sus parametros
     for (int i=0; i<father->getNumberOfParameters(); i++)
     {
-        newParameterValue = mutateIndividualParameter(i, 0 /*father->getParameter(i)*/,std, father->getParameter(i), offspring);
+        newParameterValue = mutateIndividualParameter(i, 0 /*father->getParameter(i)*/,std, stdMin, stdMax,
+                                                      father->getParameter(i), offspring);
         offspring->setParameter(i, newParameterValue);
 
     }
@@ -605,7 +609,7 @@ void Mutation::originalMutation(Individual * father, double std, int deployedAp)
 }
 
 
-void Mutation::directedMutation(NormativeGrid *grid, Individual *father)
+void Mutation::directedMutation(NormativeGrid *grid, Individual *father, double stdMin, double stdMax)
 {
     //QMessageBox msg;
     //msg.setText("*** MUTACION DIRIGIDA***");
@@ -632,7 +636,7 @@ void Mutation::directedMutation(NormativeGrid *grid, Individual *father)
     // no hay como ejercer influencia en la mutacion
     if (cellList.count() == 0)
     {
-        originalMutation(father, getStdDeviation(), /*deployedAp*/ 10);
+        originalMutation(father, getStdDeviation(), stdMin, stdMax, /*deployedAp*/ 10);
         return;
     }
     else // existe al menos una celda con individuo en la rejilla
@@ -644,7 +648,7 @@ void Mutation::directedMutation(NormativeGrid *grid, Individual *father)
         if (selectedCell->getCount() == 1)
         {
             qDebug("   la celda tiene un solo individuo");
-            originalMutation(father, getStdDeviation(), /*deployedAp*/ 10);
+            originalMutation(father, getStdDeviation(), stdMin, stdMax, /*deployedAp*/ 10);
             return;
         }
         else // la celda tiene dos o mas individuos

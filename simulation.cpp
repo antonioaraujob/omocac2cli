@@ -34,7 +34,7 @@ int Simulation::individualIdCounter = 0;
 
 
 Simulation::Simulation(int population, int extFileSize, int generations, int subintervalsGrid, int genNormative,
-                       int matches, int stdDev, int aps, bool dMutation, double dMutationProbability)
+                       int matches, int stdDev, int stdDevMin, int stdDevMax, int aps, bool dMutation, double dMutationProbability)
 {
     populationSize = population;
 
@@ -51,6 +51,10 @@ Simulation::Simulation(int population, int extFileSize, int generations, int sub
     matchesPerIndividuals = matches;
 
     stdDeviation = stdDev;
+
+    stdDeviationMinChannelTime = stdDevMin;
+
+    stdDeviationMaxChannelTime = stdDevMax;
 
     deployedAPs = aps;
 
@@ -72,6 +76,8 @@ Simulation::Simulation(int population, int extFileSize, int generations, int sub
     qDebug("    Gnormative: %d", gNormative);
     qDebug("    numero de torneos por individuo: %d", matchesPerIndividuals);
     qDebug("    desviacion estandar: %d", stdDeviation);
+    qDebug("    desviacion estandar min: %d", stdDeviationMinChannelTime);
+    qDebug("    desviacion estandar max : %d", stdDeviationMaxChannelTime);
     qDebug("    numero de APs desplegados: %d", deployedAPs);
 }
 
@@ -354,11 +360,11 @@ void Simulation::mutatePopulation()
     // utilizar la mutación dirigida
     if (directedMutation)
     {
-        mutation->doDirectedMutation(populationList, getStdDeviation(), deployedAPs, directedMutationProbability, nGrid);
+        mutation->doDirectedMutation(populationList, getStdDeviation(), stdDeviationMinChannelTime, stdDeviationMaxChannelTime, deployedAPs, directedMutationProbability, nGrid);
     }
     else
     {
-        mutation->doMutation(populationList, getStdDeviation(), deployedAPs);
+        mutation->doMutation(populationList, getStdDeviation(), stdDeviationMinChannelTime, stdDeviationMaxChannelTime, deployedAPs);
     }
 
     mutatedPopulationList = mutation->getNewPopulation();
