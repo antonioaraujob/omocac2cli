@@ -35,7 +35,10 @@ private:
      */
     double stdDeviation;
 
-
+    /**
+     * @brief Objeto que abstrae la campana de scanning
+     */
+    //ScanningCampaing * scanningCampaing;
 public:
 
     /**

@@ -19,6 +19,7 @@ struct ProbeResponse {
   int nic_channel;
   int delay;
   int jiffies;
+  int prequest;
   float kernel_time;
   std::string ssid;
   std::string bssid;
@@ -72,29 +73,32 @@ class ScanResult {
 
       // Check if the channel already exists in the map, create the channel
       // if necessary
-      if (results.count(ch) == 0) {
+      if (results_.count(ch) == 0) {
         // results[channel_id] = new Channel(channel_id);
-        results[ch] = Channel(ch);
+        results_[ch] = Channel(ch);
       }
 
-      results[ch].addResponse(presp);
+      results_[ch].addResponse(presp);
     }
 
 
     Channel channel(int ch) {
       Channel r;
-      if (results.count(ch) == 0) {
+      if (results_.count(ch) == 0) {
         return r;
       }
 
-      return results[ch];
+      return results_[ch];
     }
 
+    std::map<int, Channel> results() {
+      return results_;
+    }
   private:
 
-    // results group the ProbeResponses registered at each channel. Since we
+    // results_ groups the ProbeResponses registered at each channel. Since we
     // don't know what are the scanned channels, we use a map to holds it
-    std::map<int, Channel> results;
+    std::map<int, Channel> results_;
 };
 
 
@@ -129,7 +133,7 @@ class ScanningCampaing {
       //fprintf(stdout, "Database opened successfully :)\n");
 
       std::string sql;
-      sql = "SELECT algorithm, scan, op_channel, nic_channel, jiffies, kernel_time, ssid, bssid, delayj, frame_type ";
+      sql = "SELECT algorithm, scan, op_channel, nic_channel, jiffies, kernel_time, ssid, bssid, delayj, frame_type, prequest";
       sql += " FROM frames ";
       sql += " WHERE algorithm = \"" + experiment + "\";";
 
@@ -147,15 +151,16 @@ class ScanningCampaing {
 
       N = scans.size();
 
-      //for(auto & i: scans) {
-        // TODO: check the cmp operator
-        //std::sort(i.begin(), i.end(), cmp);
-      //}
-
+      // TODO: find a way to select the seed
       // Prepare the random generator
       std::random_device rd;
       gen = new std::mt19937(rd());
       rand = new std::uniform_int_distribution<>(0, scans.size() - 1);
+
+
+      // asignar el numero de scanning ejecutados
+      numberOfScannings = 100;
+      randomScanningDistribution = new std::uniform_int_distribution<>(1, numberOfScannings);
     }
 
 
@@ -215,7 +220,7 @@ class ScanningCampaing {
      * min_ch_values holds the MinCT values according to the chan_seq order
      * max_ch_values holds the MaxCT values according to the chan_seq order
      *
-     * len(chan_seq) == len(min_ch_values) == len(max_ch_values) == num_ch 
+     * len(chan_seq) == len(min_ch_values) == len(max_ch_values) == num_ch
      *
      * This method will loop over all the scans registered and emulate the
      * results based on the specified parameters. It will return a vector
@@ -274,17 +279,204 @@ class ScanningCampaing {
     }
 
 
+    /*
+     * Returns the time that separates a given Probe Response and the
+     * previous one in a given channel. To do this, it randomly selects a
+     * time from the inter-response vector, using the channel and response
+     * number as indicated in the parameters
+     */
+    float timeBetweenResponses(int channel, int response_no) {
+
+      // TODO: verify that the channel and response_no contains valid values
+      long n = ird_times[channel][response_no].size();
+      long index;
+
+      if (n == 0) {
+        return -1;
+      }
+
+      if (n == 1) {
+        return ird_times.at(channel).at(response_no)[0];
+      }
+
+      std::uniform_int_distribution<> ird_rand(0, n - 1);
+
+      index = ird_rand(*gen);
+      return ird_times.at(channel).at(response_no)[index];
+    }
+
+
+    void prepareIRD() {
+      std::vector<ProbeResponse> presponses;
+      int ch_no;
+      int response_no;
+      int ird;
+      int prev_delay;
+      std::vector<ProbeResponse>::iterator it;
+
+      for (auto & scan: scans) {
+        for (auto & channel: scan.results()) {
+          ch_no = channel.first;
+
+          if (ird_times.count(ch_no) == 0) {
+            ird_times[ch_no] = std::map<int, std::vector<int>>();
+          }
+
+          // For the first Probe Response, there is no previous delay, and
+          // their IRD is equal to the delay
+          prev_delay = 0;
+          response_no = 1;
+          presponses = channel.second.responses();
+          for (it = presponses.begin(); it != presponses.end();
+              ++it, ++response_no) {
+
+            if (ird_times[ch_no].count(response_no) == 0) {
+              ird_times[ch_no][response_no] = std::vector<int>();
+            }
+
+            ird = it->delay - prev_delay;
+            ird_times[ch_no][response_no].push_back(ird);
+            prev_delay = it->delay;
+          }
+        }
+      }
+
+      // descomentar lo siguiente para obtener una muestra grafica de la distribucion
+      // en la salida
+      /*
+      for (auto & ch : ird_times) {
+        fprintf(stderr, "%d => \n", ch.first);
+        for (auto & responses : ch.second) {
+          std::sort(responses.second.begin(), responses.second.end());
+          fprintf(stderr, "    %d (%d)=> [", responses.first, responses.second.size());
+          for (auto & response : responses.second) {
+            fprintf(stderr, "%d ", response);
+          }
+          fprintf(stderr, "]\n");
+        }
+      }
+      printf("\n");
+      */
+    }
+
+    /*
+     * Assuming that N = number of times that the indicated channel was
+     * explored. Notice that this is true if the channel is explored in all
+     * scannings
+     */
+    double probabilityChannelEmpty(int channel) {
+      double n = ird_times[channel][1].size();
+      return 1.0 - (n / N);
+    }
+
+    /* Calculate the probability of getting the 1st Probe Response before a
+     * given time
+     *
+     * The probability is calculated assuming that the ird_times are sorted
+     * in increasing order.
+     */
+    double probabilityResponseBefore(int channel, int limit) {
+
+      // TODO: verify that the parameters exists
+      double n = ird_times[channel][1].size();
+
+      int idx = 0;
+      int time = ird_times[channel][1][idx];
+
+      while(time < limit) {
+        ++idx;
+        time = ird_times[channel][1][idx];
+      }
+
+      return double(idx) / n;
+    }
+
+    int getAP(int channel, double min, double max){
+        //printf("canal: %d, min: %f, max: %f \n", channel, min, max);
+//return 1;
+
+
+        int scanningNumber = 100;
+
+        //std::random_device rd;
+        //std::mt19937* gen = new std::mt19937(rd());
+        std::uniform_int_distribution<> ird_rand(1, numberOfScannings);
+        int index = ird_rand(*gen);
+        //printf("index: %d\n",index);
+
+
+        //int index = getRandomScanning();
+        //printf("index: %d\n",index);
+
+        // tiempo de respuesta
+        double auxTime = 0;
+        // numero de la respuesta: primeras respuestas, segundas respuestas ...
+        double responseNumber = 1;
+        // numero de APs encontrados
+        int apsFound = 0;
+        // tiempo de respuesta acumulado por APs encontrados
+        double accumulatedTime = 0;
+        // tiempo total de espera: min+max
+        double totalTime = min + max;
+        // bandera de primera iteracion
+        bool first = true;
+
+        while(true){
+            long vectorSize = ird_times[channel][responseNumber].size();
+            //printf("vectorSize: %ld\n", vectorSize);
+
+            if (index > (int) vectorSize){
+                if (first){
+                    //printf("	not found apsFound: %d\n", 0);
+                    return 0;
+                }else{
+                    //printf("	index fuera de rango: apsFound: %d\n", apsFound);
+                    return apsFound;
+                }
+            }
+            auxTime = ird_times.at(channel).at(responseNumber)[index];
+            //printf("auxTime: %f \n", auxTime);
+            accumulatedTime = accumulatedTime + auxTime;
+            //printf("accumulatedTime: %f \n", accumulatedTime);
+
+            if (accumulatedTime > min){
+                if (first){
+                    //printf("	first: apsFound: %d\n", apsFound);
+                    return apsFound;
+                }else{
+                    if (accumulatedTime <= totalTime){
+                        apsFound++;
+                        responseNumber++;
+                        first = false;
+                    }else{
+                        //printf("	totalTime: apsFound: %d\n", apsFound);
+                        return apsFound;
+                    }
+                }
+            }else{ // accumulatedTime <= min
+                apsFound++;
+                responseNumber++;
+                first = false;
+            }
+        }
+    }
+
+    int getRandomScanning() {
+        int indexOfScanning = (*randomScanningDistribution)(*gen);
+        return indexOfScanning;
+    }
+
   private:
     static int callback(void* data, int argc, char **argv, char **colName) {
       ProbeResponse buffer;
-      
+
       std::vector<ScanResult>* tmp = (std::vector<ScanResult>*) data;
 
       unsigned int scan_id = 0;
       for (int i = 0; i < argc; ++i) {
         if (strcmp(colName[i], "scan") == 0) {
-          
-          // The "scan" column starts at 1, so scan - 1 to use it as 
+
+          // The "scan" column starts at 1, so scan - 1 to use it as
           // the vector index in the results
           scan_id = atoi(argv[i]) - 1;
         }
@@ -312,6 +504,9 @@ class ScanningCampaing {
         else if (strcmp(colName[i], "frame_type") == 0) {
           buffer.type = std::string(argv[i]);
         }
+        else if (strcmp(colName[i], "prequest") == 0) {
+          buffer.prequest = atoi(argv[i]);
+        }
       }
 
 
@@ -328,17 +523,34 @@ class ScanningCampaing {
 
 
 
+
+  private:
     // One ScanResult contains the set of results obtained when a real
     // scanning was triggered in a real machine, this could be related to a
     // fixed location, although, this might not be true if the MS is in
-    // movement. So, the results holds each one of the ScanResult
+    // movement. So, scan holds each one of the ScanResult
     std::vector<ScanResult> scans;
+
+    // Keeps the distribution of the InterResponseTime, one vector position
+    // per channel. Each channel contains one vector position per response
+    // number, so it looks like a table
+    //std::vector<IRDChannel> ird_distributions;
 
     unsigned int N;
     std::string dbName;
     std::string experiment;
     std::uniform_int_distribution<>* rand;
     std::mt19937* gen;
+    std::map<int, std::map<int, std::vector<int>>> ird_times;
+
+    // numero de scanning ejecutados
+    unsigned int numberOfScannings;
+
+    // puntero a distribucion uniforme entera para obtener un scanning aleatorio entre
+    // 1 y el numero de scannings ejecutados
+    std::uniform_int_distribution<>* randomScanningDistribution;
+
+
 };
 
 #endif

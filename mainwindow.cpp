@@ -117,14 +117,16 @@ MainWindow::MainWindow()
     emulateScanning = settings.value("emularScanning").toBool();
 
     // base de datos sqlite
-    QString database("test_18.1.db");
+    //QString database("test_18.1.db");
+    QString database("database.db");
 
     // tipo de experimento para extraer las muestras: full -> full scanning
     QString experiment("full");
     scanningCampaing = new ScanningCampaing(database.toStdString(),experiment.toStdString());
     scanningCampaing->init();
+    scanningCampaing->prepareIRD();
 
-    getRandomScan(11, 5, 20);
+    //getAPs(11, 10, 20);
 
     qDebug("salida");
 
@@ -1525,4 +1527,16 @@ bool MainWindow::getEmulateScanning()
 ScanningCampaing::ScanResults MainWindow::getRandomScan(int channel, int minChannelTime, int maxChannelTime)
 {
     return scanningCampaing->randomScan(channel, minChannelTime, maxChannelTime);
+
+}
+
+int MainWindow::getAPs(int channel, int minChannelTime, int maxChannelTime)
+{
+
+    int low = 1;
+    int high = 100;
+    int random = qrand() % ((high + 1) - low) + low;
+
+    //return scanningCampaing->getAP(channel, minChannelTime, maxChannelTime, random);
+    return 1;
 }

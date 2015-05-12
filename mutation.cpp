@@ -1,5 +1,6 @@
 #include "mutation.h"
 
+#include "mainwindow.h"
 //#include "scan.h"
 
 //#include "QMessageBox"
@@ -29,6 +30,11 @@ Mutation::Mutation()
     {
         channelsUsedForMutation[i]=false;
     }
+
+    //scanningCampaing = new ScanningCampaing("database.db", "full");
+    //scanningCampaing->init();
+    //scanningCampaing->prepareIRD();
+
 
 }
 
@@ -545,15 +551,22 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
 {
     //qDebug("Mutation::getNewParameterAPs(%d, %f, %f)", channel, minChannelTime, maxChannelTime);
 
+
     // base de datos de experimentos
-    QString database("test_18.1.db");
+    //QString database("test_18.1.db");
+    QString database("database.db");
+
+
     // tipo de experimento para extraer las muestras: full -> full scanning
     QString experiment("full");
 
     //Scan scan(database.toStdString(),experiment.toStdString());
     ScanningCampaing scan(database.toStdString(),experiment.toStdString());
     scan.init();
+    scan.prepareIRD();
+    return scan.getAP(channel, minChannelTime, maxChannelTime);
 
+/*
     //Scan::ScanResults results;
     ScanningCampaing::ScanResults results;
 
@@ -563,8 +576,10 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
 
     qDebug("** nuevo parametro AP: %d", results.size());
     return (int) results.size();
+*/
 
 
+    //return MainWindow::getAPs(channel, minChannelTime, maxChannelTime);
 }
 
 

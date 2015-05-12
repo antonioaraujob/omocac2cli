@@ -421,6 +421,15 @@ public:
      */
     static ScanningCampaing::ScanResults getRandomScan(int channel, int minChannelTime, int maxChannelTime);
 
+    /**
+     * @brief Obtiene el numero de APs encontrados dados los parametros pasados como argumento
+     * @param channel
+     * @param minChannelTime
+     * @param maxChannelTime
+     * @return numero de APs encontrados dados los parametros pasados como argumento
+     */
+    static int getAPs(int channel, int minChannelTime, int maxChannelTime);
+
 };
 
 #endif // MAINWINDOW_H

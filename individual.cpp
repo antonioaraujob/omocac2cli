@@ -29,14 +29,16 @@ Individual::Individual(int numberOfApsDeployed)
     //QString database("/home/antonio/Copy/2014/pgcomp/ia/gridCells/gridCells/test_18.1.db");
     //QString database("/home/antonio/desarrollo/iaa/git/omocac/test_18.1.db");
     //QString database("test_18.1.db");
+    QString database("database.db");
 
     // tipo de experimento para extraer las muestras: full -> full scanning
-    //QString experiment("full");
+    QString experiment("full");
 
     //Scan scan(database.toStdString(),experiment.toStdString());
-    //ScanningCampaing scan(database.toStdString(),experiment.toStdString());
+    ScanningCampaing scan(database.toStdString(),experiment.toStdString());
 
-    //scan.init();
+    scan.init();
+    scan.prepareIRD();
 
     //Scan::ScanResults results = scan.execute(11, 10, 30);
     ScanningCampaing::ScanResults results;
@@ -46,6 +48,8 @@ Individual::Individual(int numberOfApsDeployed)
     int randomChannel = 0;
     double minChannelTime = 0;
     double maxChannelTime = 0;
+
+    int apsFound = 0;
 
 
     // iterar de acuerdo al tamano del individuo
@@ -67,13 +71,18 @@ Individual::Individual(int numberOfApsDeployed)
 
         // nueva funcion para obtener el numero de AP de acuerdo a la campana de medicion
         //results = scan.randomScan(randomChannel, minChannelTime, maxChannelTime);
-        results = MainWindow::getRandomScan(randomChannel, minChannelTime, maxChannelTime);
+        //results = MainWindow::getRandomScan(randomChannel, minChannelTime, maxChannelTime);
+
+        //apsFound = MainWindow::getAPs(randomChannel, minChannelTime, maxChannelTime);
+        apsFound = scan.getAP(randomChannel, minChannelTime, maxChannelTime);
 
         //qDebug("**numero de APs encontrados en el canal %d: %d",randomChannel, results.size());
         //std::cout << " numero de APs encontrados en el canal: " << randomChannel << ": " << results.size() << std::endl;
         //qDebug("**scan.execute(%d, %f, %f)=%d",randomChannel, minChannelTime, maxChannelTime, results.size());
 
-        parametersList.append(results.size());
+        //parametersList.append(results.size());
+
+        parametersList.append(apsFound);
 
         wonMatchesCounter = 0;
     }
