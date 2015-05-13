@@ -238,6 +238,19 @@ public:
 
     int getPatternSequence(QList<int> channelList);
 
+
+    /**
+     * @brief Retorna el numero de APs encontrados al emular la repeticion de nscans full scanning y
+     * seleccionar el mayor valor de APs
+     * @param nscans numero de scanning a realizar para luego hacer el calculo
+     * @param channel canal en el cual se realiza el scanning
+     * @param min valor de MinChannelTime
+     * @param max valor de MaxChannelTime
+     * @return numero de APs encontrados al emular la repeticion de nscans full scanning y
+     * seleccionar el mayor valor de APs
+     */
+    int getAPsFromMaxNumberApproach(int channel, double min, double max);
+
 };
 
 #endif // MUTATION_H

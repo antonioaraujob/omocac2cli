@@ -807,3 +807,9 @@ echo "
 
 \end{document}" >> /tmp/salida.tex
 
+
+# *****************************************************************************
+# compilar el archivo /salida.tex y generar el pdf
+
+cd /tmp
+pdflatex /tmp/salida.tex

@@ -552,6 +552,9 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
     //qDebug("Mutation::getNewParameterAPs(%d, %f, %f)", channel, minChannelTime, maxChannelTime);
 
 
+    return getAPsFromMaxNumberApproach(channel, minChannelTime, maxChannelTime);
+
+/*
     // base de datos de experimentos
     //QString database("test_18.1.db");
     QString database("database.db");
@@ -565,6 +568,7 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
     scan.init();
     scan.prepareIRD();
     return scan.getAP(channel, minChannelTime, maxChannelTime);
+*/
 
 /*
     //Scan::ScanResults results;
@@ -1029,3 +1033,29 @@ int Mutation::getPatternSequence(QList<int> channelList)
 
 
 
+int Mutation::getAPsFromMaxNumberApproach(int channel, double min, double max)
+{
+    QString database("database.db");
+    QString experiment("full");
+    ScanningCampaing scan(database.toStdString(),experiment.toStdString());
+    scan.init();
+    scan.prepareIRD();
+    //return scan.getAP(channel, minChannelTime, maxChannelTime);
+
+    int low = 1;
+    int high = 8;
+    int nscans = qrand() % ((high+1)-low)+low;
+
+    int tmpAPs = 0;
+    int finalAPs = 0;
+
+    for(int i=0; i<nscans; i++)
+    {
+        tmpAPs = scan.getAP(channel, min, max);
+        if (tmpAPs > finalAPs)
+        {
+            finalAPs = tmpAPs;
+        }
+    }
+    return finalAPs;
+}
