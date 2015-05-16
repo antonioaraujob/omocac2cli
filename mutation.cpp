@@ -551,10 +551,6 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
 {
     //qDebug("Mutation::getNewParameterAPs(%d, %f, %f)", channel, minChannelTime, maxChannelTime);
 
-
-    return getAPsFromMaxNumberApproach(channel, minChannelTime, maxChannelTime);
-
-/*
     // base de datos de experimentos
     //QString database("test_18.1.db");
     QString database("database.db");
@@ -568,7 +564,7 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
     scan.init();
     scan.prepareIRD();
     return scan.getAP(channel, minChannelTime, maxChannelTime);
-*/
+
 
 /*
     //Scan::ScanResults results;

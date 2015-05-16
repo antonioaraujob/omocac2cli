@@ -278,33 +278,42 @@ class ScanningCampaing {
       return r;
     }
 
-
     /*
-     * Returns the time that separates a given Probe Response and the
-     * previous one in a given channel. To do this, it randomly selects a
-     * time from the inter-response vector, using the channel and response
-     * number as indicated in the parameters
-     */
-    float timeBetweenResponses(int channel, int response_no) {
+    * Returns the time that separates a given Probe Response and the
+    * previous one in a given channel. To do this, it randomly selects a
+    * time from the inter-response vector, using the channel and response
+    * number as indicated in the parameters
+    */
+    float newTimeBetweenResponses(int channel, int response_no) {
+        // TODO: verify that the channel and response_no contains valid values
+        long n = ird_times[channel][response_no].size();
+        long index;
 
-      // TODO: verify that the channel and response_no contains valid values
-      long n = ird_times[channel][response_no].size();
-      long index;
+        // This is true, only and only if each channel is explored once and
+        // only once per scan, this is because N = number of scans
+        double prob_of_response = double(n) / double(N);
+        std::uniform_real_distribution<double> rand_real(0, 1);
+        double num = rand_real(*gen);
 
-      if (n == 0) {
-        return -1;
-      }
+        // If no reponses, then return -1 to indicate that there were no
+        // reponses
+        if (n == 0) {
+            return -1;
+        }
 
-      if (n == 1) {
-        return ird_times.at(channel).at(response_no)[0];
-      }
+        // If there are responses but unlucky, return -1 to indicate that there
+        // were no reponses
+        if (num > prob_of_response) {
+            return -1;
+        }
 
-      std::uniform_int_distribution<> ird_rand(0, n - 1);
-
-      index = ird_rand(*gen);
-      return ird_times.at(channel).at(response_no)[index];
+        if (n == 1) {
+            return ird_times.at(channel).at(response_no)[0];
+        }
+        std::uniform_int_distribution<> ird_rand(0, n - 1);
+        index = ird_rand(*gen);
+        return ird_times.at(channel).at(response_no)[index];
     }
-
 
     void prepareIRD() {
       std::vector<ProbeResponse> presponses;
@@ -391,58 +400,51 @@ class ScanningCampaing {
       return double(idx) / n;
     }
 
-    int getAP(int channel, double min, double max){
-        //printf("canal: %d, min: %f, max: %f \n", channel, min, max);
-//return 1;
 
-
-        int scanningNumber = 100;
-
-        //std::random_device rd;
-        //std::mt19937* gen = new std::mt19937(rd());
-        std::uniform_int_distribution<> ird_rand(1, numberOfScannings);
-        int index = ird_rand(*gen);
-        //printf("index: %d\n",index);
-
-
-        //int index = getRandomScanning();
-        //printf("index: %d\n",index);
+    /**
+     * @brief nueva funcion para obtener el numero de APs en un canal dado los parametros
+     * @param channel canal a escanear
+     * @param min MinChannelTime
+     * @param max MaxChannelTime
+     * @return el numero de APs en un canal dado los parametros
+     */
+    int getAP(int channel, double min, double max) {
 
         // tiempo de respuesta
-        double auxTime = 0;
+        int auxTime = 0;
+
         // numero de la respuesta: primeras respuestas, segundas respuestas ...
-        double responseNumber = 1;
+        int responseNumber = 1;
+
         // numero de APs encontrados
         int apsFound = 0;
+
         // tiempo de respuesta acumulado por APs encontrados
-        double accumulatedTime = 0;
+        int accumulatedTime = 0;
+
         // tiempo total de espera: min+max
-        double totalTime = min + max;
+        int totalTime = min + max;
+
         // bandera de primera iteracion
         bool first = true;
 
         while(true){
-            long vectorSize = ird_times[channel][responseNumber].size();
-            //printf("vectorSize: %ld\n", vectorSize);
-
-            if (index > (int) vectorSize){
-                if (first){
-                    //printf("	not found apsFound: %d\n", 0);
-                    return 0;
-                }else{
-                    //printf("	index fuera de rango: apsFound: %d\n", apsFound);
-                    return apsFound;
-                }
+            auxTime = newTimeBetweenResponses(channel, responseNumber);
+            //printf("*** timeBetweenResponses(%d, %d) = %d\n", channel, responseNumber, auxTime);
+            if (auxTime == -1) {
+                //return apsFound;
+                break;
             }
-            auxTime = ird_times.at(channel).at(responseNumber)[index];
-            //printf("auxTime: %f \n", auxTime);
+            //printf("auxTime: %d \n", auxTime);
+
             accumulatedTime = accumulatedTime + auxTime;
-            //printf("accumulatedTime: %f \n", accumulatedTime);
+            //printf("accumulatedTime: %d \n", accumulatedTime);
 
             if (accumulatedTime > min){
                 if (first){
                     //printf("	first: apsFound: %d\n", apsFound);
-                    return apsFound;
+                    //return apsFound;
+                    break;
                 }else{
                     if (accumulatedTime <= totalTime){
                         apsFound++;
@@ -450,7 +452,8 @@ class ScanningCampaing {
                         first = false;
                     }else{
                         //printf("	totalTime: apsFound: %d\n", apsFound);
-                        return apsFound;
+                        //return apsFound;
+                        break;
                     }
                 }
             }else{ // accumulatedTime <= min
@@ -459,7 +462,10 @@ class ScanningCampaing {
                 first = false;
             }
         }
+        return apsFound;
     }
+
+
 
     int getRandomScanning() {
         int indexOfScanning = (*randomScanningDistribution)(*gen);
