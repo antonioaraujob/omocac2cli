@@ -21,6 +21,9 @@ Individual::Individual(int numberOfApsDeployed)
 
     emulateScanning = MainWindow::getEmulateScanning();
 
+    // asignar un valor de nscan entre 1 y 8
+    nscansForMutation = qrand() % ((8 + 1) - 1) + 1;
+
     // se deben crear los 33 parametros
     // C1,Min1,Max1,AP1,C2,Min2,Max2,AP2,...,C11,Min11,Max11,AP11
 
@@ -74,7 +77,7 @@ Individual::Individual(int numberOfApsDeployed)
         //results = MainWindow::getRandomScan(randomChannel, minChannelTime, maxChannelTime);
 
         //apsFound = MainWindow::getAPs(randomChannel, minChannelTime, maxChannelTime);
-        apsFound = scan.getAP(randomChannel, minChannelTime, maxChannelTime);
+        apsFound = scan.getAPs(randomChannel, minChannelTime, maxChannelTime);
 
         //qDebug("**numero de APs encontrados en el canal %d: %d",randomChannel, results.size());
         //std::cout << " numero de APs encontrados en el canal: " << randomChannel << ": " << results.size() << std::endl;
@@ -115,6 +118,8 @@ Individual::Individual(Individual &p)
     individualSize = p.getIndividualSize();
 
     emulateScanning = p.getEmulateScanning();
+
+    nscansForMutation = p.getNscanForMutation();
 
     wonMatchesCounter = p.getWonMatchesCounter();
 
@@ -402,7 +407,10 @@ QString Individual::getIndividualAsQString()
     individualString.append(QString::number(getPerformanceDiscovery()));
     individualString.append(",");
     individualString.append(QString::number(getPerformanceLatency()));
-    //individualString.append(">");
+
+    individualString.append(",");
+    individualString.append(QString::number(getNscanForMutation()));
+
     return individualString;
     // *********************************************************************************
 
@@ -793,4 +801,15 @@ double Individual::probabilityOfFindingAllAps(double delay)
 bool Individual::getEmulateScanning()
 {
     return emulateScanning;
+}
+
+int Individual::getNscanForMutation()
+{
+    return nscansForMutation;
+}
+
+
+void Individual::setNewNscansForMutation()
+{
+    nscansForMutation = qrand() % ((8 + 1) - 1) + 1;
 }

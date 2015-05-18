@@ -83,6 +83,12 @@ private:
      */
     bool emulateScanning;
 
+    /**
+     * @brief Representa el numero de full scanning que se tomaran como referencia para
+     * ejecutar el proceso de mutacion del numero de APs
+     */
+    int nscansForMutation;
+
 public:
     /**
      * @brief Constructor de la clase
@@ -301,6 +307,18 @@ public:
      * @return Retorna si se debe emular el scanning de acuerdo a la campana de medicion.
      */
     bool getEmulateScanning();
+
+    /**
+     * @brief Representa el numero de full scanning que se tomaran como referencia para
+     * ejecutar el proceso de mutacion del numero de APs
+     */
+    int getNscanForMutation();
+
+    /**
+     * @brief establece un nuevo valor aleatorio para nscans entre 1 y 8
+     */
+    void setNewNscansForMutation();
+
 };
 
 #endif // INDIVIDUAL_H

@@ -186,9 +186,10 @@ public:
      * @param channel canal en el que se esta escuchando
      * @param minChannelTime minChannelTime
      * @param maxChannelTime maxChannelTime
+     * @param nscan numero de scans a repetir para obtener los APs
      * @return
      */
-    int getNewParameterAPs(int channel, double minChannelTime, double maxChannelTime);
+    int getNewParameterAPs(int channel, double minChannelTime, double maxChannelTime, int nscans);
 
     /**
      * @brief Ejecuta la mutacion original del articulo utilizando como patron el individuo
@@ -249,7 +250,7 @@ public:
      * @return numero de APs encontrados al emular la repeticion de nscans full scanning y
      * seleccionar el mayor valor de APs
      */
-    int getAPsFromMaxNumberApproach(int channel, double min, double max);
+    int getAPsFromMaxNumberApproach(int channel, double min, double max, int nscans);
 
 };
 

@@ -21,6 +21,7 @@ struct ProbeResponse {
   int jiffies;
   int prequest;
   float kernel_time;
+  int ird;
   std::string ssid;
   std::string bssid;
   std::string type;
@@ -156,11 +157,6 @@ class ScanningCampaing {
       std::random_device rd;
       gen = new std::mt19937(rd());
       rand = new std::uniform_int_distribution<>(0, scans.size() - 1);
-
-
-      // asignar el numero de scanning ejecutados
-      numberOfScannings = 100;
-      randomScanningDistribution = new std::uniform_int_distribution<>(1, numberOfScannings);
     }
 
 
@@ -220,7 +216,7 @@ class ScanningCampaing {
      * min_ch_values holds the MinCT values according to the chan_seq order
      * max_ch_values holds the MaxCT values according to the chan_seq order
      *
-     * len(chan_seq) == len(min_ch_values) == len(max_ch_values) == num_ch
+     * len(chan_seq) == len(min_ch_values) == len(max_ch_values) == num_ch 
      *
      * This method will loop over all the scans registered and emulate the
      * results based on the specified parameters. It will return a vector
@@ -278,42 +274,53 @@ class ScanningCampaing {
       return r;
     }
 
+
     /*
-    * Returns the time that separates a given Probe Response and the
-    * previous one in a given channel. To do this, it randomly selects a
-    * time from the inter-response vector, using the channel and response
-    * number as indicated in the parameters
-    */
-    float newTimeBetweenResponses(int channel, int response_no) {
-        // TODO: verify that the channel and response_no contains valid values
-        long n = ird_times[channel][response_no].size();
-        long index;
+     * Returns the time that separates a given Probe Response and the
+     * previous one in a given channel. To do this, it randomly selects a
+     * time from the inter-response vector, using the channel and response
+     * number as indicated in the parameters
+     */
+    ProbeResponse timeBetweenResponses(int channel, int response_no) {
 
-        // This is true, only and only if each channel is explored once and
-        // only once per scan, this is because N = number of scans
-        double prob_of_response = double(n) / double(N);
-        std::uniform_real_distribution<double> rand_real(0, 1);
-        double num = rand_real(*gen);
+      // TODO: verify that the channel and response_no contains valid values
+      long n = ird_times[channel][response_no].size();
+      long index;
 
-        // If no reponses, then return -1 to indicate that there were no
-        // reponses
-        if (n == 0) {
-            return -1;
-        }
+      // This is true, only and only if each channel is explored once and
+      // only once per scan, this is because N = number of scans
+      double prob_of_response = double(n) / double(N);
+      std::uniform_real_distribution<double> rand_real(0, 1);
+      double num = rand_real(*gen);
 
-        // If there are responses but unlucky, return -1 to indicate that there
-        // were no reponses
-        if (num > prob_of_response) {
-            return -1;
-        }
+      // none will be used to indicate that there is no ProbeResponse
+      ProbeResponse none;
+      none.ird = -1;
+      none.ssid = "";
+      none.bssid = "";
 
-        if (n == 1) {
-            return ird_times.at(channel).at(response_no)[0];
-        }
-        std::uniform_int_distribution<> ird_rand(0, n - 1);
-        index = ird_rand(*gen);
-        return ird_times.at(channel).at(response_no)[index];
+      // If no reponses, then return -1 to indicate that there were no
+      // reponses
+      if (n == 0) {
+        return none;
+      }
+
+      // If there are responses but unlucky, return -1 to indicate that there
+      // were no reponses
+      if (num > prob_of_response) {
+        return none;
+      }
+
+      if (n == 1) {
+        return ird_times.at(channel).at(response_no)[0];
+      }
+      
+      std::uniform_int_distribution<> ird_rand(0, n - 1);
+      
+      index = ird_rand(*gen);
+      return ird_times.at(channel).at(response_no)[index];
     }
+
 
     void prepareIRD() {
       std::vector<ProbeResponse> presponses;
@@ -328,7 +335,7 @@ class ScanningCampaing {
           ch_no = channel.first;
 
           if (ird_times.count(ch_no) == 0) {
-            ird_times[ch_no] = std::map<int, std::vector<int>>();
+            ird_times[ch_no] = std::map<int, std::vector<ProbeResponse>>();
           }
 
           // For the first Probe Response, there is no previous delay, and
@@ -340,26 +347,24 @@ class ScanningCampaing {
               ++it, ++response_no) {
 
             if (ird_times[ch_no].count(response_no) == 0) {
-              ird_times[ch_no][response_no] = std::vector<int>();
+              ird_times[ch_no][response_no] = std::vector<ProbeResponse>();
             }
 
             ird = it->delay - prev_delay;
-            ird_times[ch_no][response_no].push_back(ird);
+            it->ird = ird;
+            ird_times[ch_no][response_no].push_back(*it);
             prev_delay = it->delay;
           }
         }
       }
-
-      // descomentar lo siguiente para obtener una muestra grafica de la distribucion
-      // en la salida
       /*
       for (auto & ch : ird_times) {
         fprintf(stderr, "%d => \n", ch.first);
         for (auto & responses : ch.second) {
-          std::sort(responses.second.begin(), responses.second.end());
+          std::sort(responses.second.begin(), responses.second.end(), cmp);
           fprintf(stderr, "    %d (%d)=> [", responses.first, responses.second.size());
           for (auto & response : responses.second) {
-            fprintf(stderr, "%d ", response);
+            fprintf(stderr, "%d ", response.ird);
           }
           fprintf(stderr, "]\n");
         }
@@ -390,25 +395,24 @@ class ScanningCampaing {
       double n = ird_times[channel][1].size();
 
       int idx = 0;
-      int time = ird_times[channel][1][idx];
+      int time = ird_times[channel][1][idx].ird;
 
       while(time < limit) {
         ++idx;
-        time = ird_times[channel][1][idx];
+        time = ird_times[channel][1][idx].ird;
       }
 
       return double(idx) / n;
     }
 
-
-    /**
+     /**
      * @brief nueva funcion para obtener el numero de APs en un canal dado los parametros
      * @param channel canal a escanear
      * @param min MinChannelTime
      * @param max MaxChannelTime
      * @return el numero de APs en un canal dado los parametros
      */
-    int getAP(int channel, double min, double max) {
+    int getAPs(int channel, double min, double max) {
 
         // tiempo de respuesta
         int auxTime = 0;
@@ -428,61 +432,68 @@ class ScanningCampaing {
         // bandera de primera iteracion
         bool first = true;
 
+        // Vector of APs found (it is possible to receive several ProbeResponses
+        // sent by the same AP
+        std::set<std::string> aps;
+
+        ProbeResponse tmp;
+        std::string bssid;
+
         while(true){
-            auxTime = newTimeBetweenResponses(channel, responseNumber);
-            //printf("*** timeBetweenResponses(%d, %d) = %d\n", channel, responseNumber, auxTime);
-            if (auxTime == -1) {
-                //return apsFound;
-                break;
-            }
-            //printf("auxTime: %d \n", auxTime);
+          tmp = timeBetweenResponses(channel, responseNumber);
+          auxTime = tmp.ird;
+          bssid = tmp.bssid;
 
-            accumulatedTime = accumulatedTime + auxTime;
-            //printf("accumulatedTime: %d \n", accumulatedTime);
+          //printf("*** timeBetweenResponses(%d, %d) = %d\n", channel, responseNumber, auxTime);
+          if (auxTime == -1) {
+            //return apsFound;
+            break;
+          }
+          //printf("auxTime: %d \n", auxTime);
 
-            if (accumulatedTime > min){
-                if (first){
-                    //printf("	first: apsFound: %d\n", apsFound);
-                    //return apsFound;
-                    break;
-                }else{
-                    if (accumulatedTime <= totalTime){
-                        apsFound++;
-                        responseNumber++;
-                        first = false;
-                    }else{
-                        //printf("	totalTime: apsFound: %d\n", apsFound);
-                        //return apsFound;
-                        break;
-                    }
-                }
-            }else{ // accumulatedTime <= min
-                apsFound++;
+          accumulatedTime = accumulatedTime + auxTime;
+          //printf("accumulatedTime: %d \n", accumulatedTime);
+
+          if (accumulatedTime > min){
+            if (first){
+              //printf("	first: apsFound: %d\n", apsFound);
+              //return apsFound;
+              break;
+            }else{
+              if (accumulatedTime <= totalTime){
+                aps.insert(bssid);
                 responseNumber++;
                 first = false;
+              }else{
+                //printf("	totalTime: apsFound: %d\n", apsFound);
+                //return apsFound;
+                break;
+              }
             }
+          }else{ // accumulatedTime <= min
+            aps.insert(bssid);
+            responseNumber++;
+            first = false;
+          }
         }
-        return apsFound;
+        return aps.size();
     }
 
 
 
-    int getRandomScanning() {
-        int indexOfScanning = (*randomScanningDistribution)(*gen);
-        return indexOfScanning;
-    }
+
 
   private:
     static int callback(void* data, int argc, char **argv, char **colName) {
       ProbeResponse buffer;
-
+      
       std::vector<ScanResult>* tmp = (std::vector<ScanResult>*) data;
 
       unsigned int scan_id = 0;
       for (int i = 0; i < argc; ++i) {
         if (strcmp(colName[i], "scan") == 0) {
-
-          // The "scan" column starts at 1, so scan - 1 to use it as
+          
+          // The "scan" column starts at 1, so scan - 1 to use it as 
           // the vector index in the results
           scan_id = atoi(argv[i]) - 1;
         }
@@ -528,8 +539,6 @@ class ScanningCampaing {
     }
 
 
-
-
   private:
     // One ScanResult contains the set of results obtained when a real
     // scanning was triggered in a real machine, this could be related to a
@@ -547,16 +556,8 @@ class ScanningCampaing {
     std::string experiment;
     std::uniform_int_distribution<>* rand;
     std::mt19937* gen;
-    std::map<int, std::map<int, std::vector<int>>> ird_times;
-
-    // numero de scanning ejecutados
-    unsigned int numberOfScannings;
-
-    // puntero a distribucion uniforme entera para obtener un scanning aleatorio entre
-    // 1 y el numero de scannings ejecutados
-    std::uniform_int_distribution<>* randomScanningDistribution;
-
-
+    std::map<int, std::map<int, std::vector<ProbeResponse>>> ird_times;
 };
 
 #endif
+

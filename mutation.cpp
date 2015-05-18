@@ -69,6 +69,9 @@ void Mutation::doMutation(QList<Individual *> population, double std, double std
                                                           father->getParameter(i), offspring);
             offspring->setParameter(i, newParameterValue);
         }
+
+        offspring->setNewNscansForMutation();
+
         // se muto el offspring ahora limpiar el diccionario de canales usados
         // asignar el diccionario de canales utilizados en la mutacion en falso
         for (int c=1; c<=11;c++)
@@ -247,7 +250,8 @@ int Mutation::mutateIndividualParameter(int index, int mean, double std, double 
 
         intYi = getNewParameterAPs(offspring->getParameter(index-3),
                                    offspring->getParameter(index-2),
-                                   offspring->getParameter(index-1));
+                                   offspring->getParameter(index-1),
+                                   offspring->getNscanForMutation());
 
         if (intYi < 0)
         {
@@ -547,7 +551,7 @@ void Mutation::printNewPopulation()
 }
 
 
-int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxChannelTime)
+int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxChannelTime, int nscans)
 {
     //qDebug("Mutation::getNewParameterAPs(%d, %f, %f)", channel, minChannelTime, maxChannelTime);
 
@@ -563,7 +567,13 @@ int Mutation::getNewParameterAPs(int channel, double minChannelTime, double maxC
     ScanningCampaing scan(database.toStdString(),experiment.toStdString());
     scan.init();
     scan.prepareIRD();
-    return scan.getAP(channel, minChannelTime, maxChannelTime);
+
+    // obtener el nuevo valor de AP de acuerdo al enfoque del mayor valor encontrado
+    // en la repeticion de nscans veces
+    int newparameterAPs = getAPsFromMaxNumberApproach(channel, minChannelTime, maxChannelTime, nscans);
+    return newparameterAPs;
+
+    //return scan.getAP(channel, minChannelTime, maxChannelTime);
 
 
 /*
@@ -1029,7 +1039,7 @@ int Mutation::getPatternSequence(QList<int> channelList)
 
 
 
-int Mutation::getAPsFromMaxNumberApproach(int channel, double min, double max)
+int Mutation::getAPsFromMaxNumberApproach(int channel, double min, double max, int nscans)
 {
     QString database("database.db");
     QString experiment("full");
@@ -1037,17 +1047,17 @@ int Mutation::getAPsFromMaxNumberApproach(int channel, double min, double max)
     scan.init();
     scan.prepareIRD();
     //return scan.getAP(channel, minChannelTime, maxChannelTime);
-
+/*
     int low = 1;
     int high = 8;
     int nscans = qrand() % ((high+1)-low)+low;
-
+*/
     int tmpAPs = 0;
     int finalAPs = 0;
 
     for(int i=0; i<nscans; i++)
     {
-        tmpAPs = scan.getAP(channel, min, max);
+        tmpAPs = scan.getAPs(channel, min, max);
         if (tmpAPs > finalAPs)
         {
             finalAPs = tmpAPs;

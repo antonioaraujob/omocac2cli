@@ -967,6 +967,11 @@ void MainWindow::reportIndividualOrderedByLatencyInGenes(QList<Individual*> list
         str.append(QString::number(ind->getPerformanceDiscovery()));
         str.append(",");
         str.append(QString::number(ind->getPerformanceLatency()));
+
+        // para reportar nscans
+        str.append(",");
+        str.append(QString::number(ind->getNscanForMutation()));
+
         str.append("\n");
         out << str;
         str.clear();
@@ -1125,6 +1130,11 @@ void MainWindow::reportIndividualOrderedByApInGenes(QList<Individual*> list, QSt
         str.append(QString::number(ind->getPerformanceDiscovery()));
         str.append(",");
         str.append(QString::number(ind->getPerformanceLatency()));
+
+        // para reportar nscans
+        str.append(",");
+        str.append(QString::number(ind->getNscanForMutation()));
+
         str.append("\n");
         out << str;
         str.clear();
@@ -1537,6 +1547,6 @@ int MainWindow::getAPs(int channel, int minChannelTime, int maxChannelTime)
     int high = 100;
     int random = qrand() % ((high + 1) - low) + low;
 
-    //return scanningCampaing->getAP(channel, minChannelTime, maxChannelTime, random);
+    //return scanningCampaing->getAPs(channel, minChannelTime, maxChannelTime, random);
     return 1;
 }

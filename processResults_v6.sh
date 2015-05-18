@@ -11,6 +11,10 @@
 #
 #
 #
+# version: 6
+# agrega una columna al final de la tabla que incluye el valor de nscan para el 
+# individuo
+
 
 # iniciar el archivo latex
 echo "\documentclass{article}
@@ -37,7 +41,7 @@ echo "\documentclass{article}
 \rowcolors{1}{white}{light-gray}
 
 %\begin{tabularx}{\textwidth}{XXXXXXXXXXXrr}
-\begin{tabularx}{\textwidth}{|XXXXXXXXXXX|m{1cm}|m{1cm}|X}
+\begin{tabularx}{\textwidth}{|XXXXXXXXXXX|m{0.5cm}|m{0.5cm}|m{0.3cm}|}
 
 
 
@@ -137,7 +141,7 @@ BEGIN {
 
 	}
 	if ($28=="0")
-	{
+	{17.05.2015_18.48.56
 		#gen1="$\textit{$\textbf{10}^{70}$\newline$<$7,63$>\rightarrow$5}";
 		#gen7="\\textit{"$25"}";
 		gen7="\\textit{\\textbf{"$25"}\\newline$<$"$26","$27"$>\\rightarrow$"$28"}";
@@ -201,7 +205,7 @@ BEGIN {
 		gen11="\\textbf{"$41"}\\newline$<$"$42","$43"$>\\rightarrow$"$44;
 	}
 		
-	print gen1" & "gen2" & "gen3" & "gen4" & "gen5" & "gen6" & "gen7" & "gen8" & "gen9" & "gen10" & "gen11 " & " $45" & "$46 "\134\134" ;
+	print gen1" & "gen2" & "gen3" & "gen4" & "gen5" & "gen6" & "gen7" & "gen8" & "gen9" & "gen10" & "gen11 " & " $45" & "$46 "& " $47 "\134\134" ;
 
 }' individuosFrenteParetoOriginal.txt >> salida.tex
 
@@ -229,12 +233,12 @@ echo "
 \rowcolors{1}{white}{light-gray}
 
 %\begin{tabularx}{\textwidth}{XXXXXXXXXXXrr}
-\begin{tabularx}{\textwidth}{|XXXXXXXXXXX|m{1cm}|m{1cm}|}
+\begin{tabularx}{\textwidth}{|XXXXXXXXXXX|m{0.5cm}|m{0.5cm}|m{0.3cm}|}
 
 %\begin{tabular}{lrrrrrrrrrrrr}
 \hline
 %\multicolumn{11}{l}{Ch$<\$min,max\$>\rightarrow\$AP} & \$FO_1\$ & \$FO_2\$ \\""\\
-\multicolumn{11}{|l|}{Ch\newline\$<\$min,max\$>\rightarrow\$AP} & \$FO_1\$\newline(\#AP) & \$FO_2\$\newline(ms) \\""\\
+\multicolumn{11}{|l|}{Ch\newline\$<\$min,max\$>\rightarrow\$AP} & \$FO_1\$\newline(\#AP) & \$FO_2\$\newline(ms) & nscan \\""\\
 \hline
 " >> salida.tex
 
@@ -385,7 +389,7 @@ BEGIN {
 	}
 	
 		
-	print gen1" & "gen2" & "gen3" & "gen4" & "gen5" & "gen6" & "gen7" & "gen8" & "gen9" & "gen10" & "gen11 " & " $45" & "$46 "\134\134" ;
+	print gen1" & "gen2" & "gen3" & "gen4" & "gen5" & "gen6" & "gen7" & "gen8" & "gen9" & "gen10" & "gen11 " & " $45" & "$46" &" $47 "\134\134" ;
 
 }' individuosFrenteParetoOriginalPorLatencia.txt >> salida.tex
 
@@ -419,12 +423,12 @@ echo "
 \rowcolors{1}{white}{light-gray}
 
 %\begin{tabularx}{\textwidth}{XXXXXXXXXXXrr}
-\begin{tabularx}{\textwidth}{|XXXXXXXXXXX|m{1cm}|m{1cm}|}
+\begin{tabularx}{\textwidth}{|XXXXXXXXXXX|m{0.5cm}|m{0.5cm}|m{0.3cm}|}
 
 %\begin{tabular}{lrrrrrrrrrrrr}
 \hline
 %\multicolumn{11}{l}{Ch$<\$min,max\$>\rightarrow\$AP} & \$FO_1\$ & \$FO_2\$ \\""\\
-\multicolumn{11}{|l|}{Ch\newline\$<\$min,max\$>\rightarrow\$AP} & \$FO_1\$\newline(\#AP) & \$FO_2\$\newline(ms) \\""\\
+\multicolumn{11}{|l|}{Ch\newline\$<\$min,max\$>\rightarrow\$AP} & \$FO_1\$\newline(\#AP) & \$FO_2\$\newline(ms) & nscan \\""\\
 \hline
 " >> salida.tex
 
@@ -576,7 +580,7 @@ BEGIN {
 	}
 	
 		
-	print gen1" & "gen2" & "gen3" & "gen4" & "gen5" & "gen6" & "gen7" & "gen8" & "gen9" & "gen10" & "gen11 " & " $45" & "$46 "\134\134" ;
+	print gen1" & "gen2" & "gen3" & "gen4" & "gen5" & "gen6" & "gen7" & "gen8" & "gen9" & "gen10" & "gen11 " & " $45" & "$46 " & " $47 "\134\134" ;
 
 }' individuosFrenteParetoOriginalPorAPsAscendente.txt >> salida.tex
 
@@ -612,12 +616,12 @@ echo "
 \rowcolors{1}{white}{light-gray}
 
 %\begin{tabularx}{\textwidth}{XXXXXXXXXXXrr}
-\begin{tabularx}{\textwidth}{|XXXXXXXXXXX|m{1cm}|m{1cm}|}
+\begin{tabularx}{\textwidth}{|XXXXXXXXXXX|m{0.5cm}|m{0.5cm}|m{0.3cm}|}
 
 %\begin{tabular}{lrrrrrrrrrrrr}
 \hline
 %\multicolumn{11}{l}{Ch$<\$min,max\$>\rightarrow\$AP} & \$FO_1\$ & \$FO_2\$ \\""\\
-\multicolumn{11}{|l|}{Ch\newline\$<\$min,max\$>\rightarrow\$AP} & \$FO_1\$\newline(\#AP) & \$FO_2\$\newline(ms) \\""\\
+\multicolumn{11}{|l|}{Ch\newline\$<\$min,max\$>\rightarrow\$AP} & \$FO_1\$\newline(\#AP) & \$FO_2\$\newline(ms) & nscan \\""\\
 \hline
 " >> salida.tex
 
@@ -769,7 +773,7 @@ BEGIN {
 	}
 	
 		
-	print gen1" & "gen2" & "gen3" & "gen4" & "gen5" & "gen6" & "gen7" & "gen8" & "gen9" & "gen10" & "gen11 " & " $45" & "$46 "\134\134" ;
+	print gen1" & "gen2" & "gen3" & "gen4" & "gen5" & "gen6" & "gen7" & "gen8" & "gen9" & "gen10" & "gen11 " & " $45" & "$46" & " $47 "\134\134" ;
 
 }' individuosFrenteParetoOriginalPorAPsDescendente.txt >> salida.tex
 
