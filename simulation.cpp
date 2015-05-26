@@ -128,6 +128,34 @@ void Simulation::initializePopulation()
     //return populationList;
 }
 
+
+void Simulation::initializeSmartPopulation()
+{
+    Individual * individuo;
+
+    // inicializacion de la mita de la poblacion con condiciones inciales
+    for (int i = 0; i < populationSize/2; i++)
+    {
+        individuo = new Individual(true);
+        individuo->printIndividual();
+        qDebug("individualId: %d", individuo->getIndividualId());
+        populationList.append(individuo);
+    }
+
+    // inicializacion de la mita de la poblacion con condiciones inciales
+    for (int j = 0; j < populationSize/2; j++)
+    {
+        individuo = new Individual(false);
+        individuo->printIndividual();
+        qDebug("individualId: %d", individuo->getIndividualId());
+        populationList.append(individuo);
+    }
+
+
+    qDebug("tamano de la poblacion: %d",populationList.count());
+}
+
+
 QList<Individual *>  Simulation::getPopulationList()
 {
     return populationList;

@@ -192,6 +192,11 @@ public:
     void initializePopulation();
 
     /**
+     * @brief Inicializa la poblacion con condiciones inciales
+     */
+    void initializeSmartPopulation();
+
+    /**
      * @brief Retorna la lista de la poblacion de invididuos
      * @return
      */

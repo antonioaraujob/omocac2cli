@@ -103,6 +103,148 @@ Individual::Individual(int numberOfApsDeployed)
 }
 
 
+Individual::Individual(bool smart)
+{
+    // asignar el valor unico del identificador del individuo
+    individualId = Simulation::getNewindividualId();
+
+    // asignar el tamano del individuo
+    individualSize = MainWindow::getIndividualSize();
+    //qDebug("Individual.cpp: individualSize = %s", qPrintable(QString::number(individualSize)));
+
+    emulateScanning = MainWindow::getEmulateScanning();
+
+    // asignar un valor de nscan entre 1 y 8
+    nscansForMutation = qrand() % ((8 + 1) - 1) + 1;
+
+    // se deben crear los 33 parametros
+    // C1,Min1,Max1,AP1,C2,Min2,Max2,AP2,...,C11,Min11,Max11,AP11
+
+
+    // base de datos sqlite
+    QString database("database.db");
+
+    // tipo de experimento para extraer las muestras: full -> full scanning
+    QString experiment("full");
+
+    //Scan scan(database.toStdString(),experiment.toStdString());
+    ScanningCampaing scan(database.toStdString(),experiment.toStdString());
+
+    scan.init();
+    scan.prepareIRD();
+
+    int randomChannel = 0;
+    double minChannelTime = 0;
+    double maxChannelTime = 0;
+
+    int apsFound = 0;
+
+    if (!smart)
+    {
+        // iterar de acuerdo al tamano del individuo
+        for (int i=0; i<individualSize; i++)
+        {
+            randomChannel = getRandomChannel();
+            parametersList.append(randomChannel);
+
+            minChannelTime = getRandomMinChannelTime();
+            maxChannelTime = getRandomMaxChannelTime();
+            parametersList.append(minChannelTime);
+            parametersList.append(maxChannelTime);
+
+            apsFound = scan.getAPs(randomChannel, minChannelTime, maxChannelTime);
+            parametersList.append(apsFound);
+
+            wonMatchesCounter = 0;
+        }
+    }
+    else
+    {
+        setSmartParameters();
+    }
+
+
+    // calcular el valor de desempeno para la descubierta
+    calculateDiscoveryValue();
+
+    // calcular el valor de desempeno para la latencia
+    calculateLatencyValue();
+}
+
+
+
+void Individual::setSmartParameters()
+{
+    // base de datos sqlite
+    QString database("database.db");
+    // tipo de experimento para extraer las muestras: full -> full scanning
+    QString experiment("full");
+    //Scan scan(database.toStdString(),experiment.toStdString());
+    ScanningCampaing scan(database.toStdString(),experiment.toStdString());
+    scan.init();
+    scan.prepareIRD();
+    int apsFound = 0;
+
+    // secuencia de ios
+    // 1,39.02,0,2,39.02,0,3,39.02,0,4,39.02,0,5,39.02,0,6,39.02,0,7,39.02,0,8,39.02,0,9,39.02,0,10,39.02,0,11,39.02,0
+    parametersList.append(1);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(1, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(2);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(2, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(3);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(3, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(4);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(4, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(5);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(5, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(6);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(6, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(7);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(7, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(8);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(8, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(9);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(9, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(10);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(10, 39, 0);
+    parametersList.append(apsFound);
+    parametersList.append(11);
+    parametersList.append(39);
+    parametersList.append(0);
+    apsFound = scan.getAPs(11, 39, 0);
+    parametersList.append(apsFound);
+}
+
+
 Individual::Individual(Individual &p)
 {
     // iterar de acuerdo al tamano del individuo

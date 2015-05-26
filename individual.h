@@ -98,6 +98,16 @@ public:
     Individual(int numberOfApsDeployed);
 
     /**
+     * @brief Constructor de un individuo pseudointeligentes por la influencia de
+     * condicionales iniciales.
+     *
+     * Se usa en el caso de pruebas de individuos que corresponderian a secuencias
+     * que se conocen como buenas
+     */
+    Individual(bool smart);
+
+
+    /**
      * @brief Destructor de la clase
      */
     ~Individual();
@@ -319,6 +329,10 @@ public:
      */
     void setNewNscansForMutation();
 
+    /**
+     * @brief asigna los parametros del individuo de acuerdo a una cadena particular
+     */
+    void setSmartParameters();
 };
 
 #endif // INDIVIDUAL_H

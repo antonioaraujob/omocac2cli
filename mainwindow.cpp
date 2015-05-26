@@ -206,7 +206,8 @@ void MainWindow::executeAlgorithm()
     */
 
     // inicializar poblacion de tamano P
-    simulation->initializePopulation();
+    //simulation->initializePopulation();
+    simulation->initializeSmartPopulation();
 
     // evaluar poblacion inicial
     simulation->evaluateIndividuals();
