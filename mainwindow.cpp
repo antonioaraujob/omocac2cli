@@ -113,8 +113,9 @@ MainWindow::MainWindow()
     individualSize = settings.value("tamanoDeIndividuo").toInt();
     qDebug("individualSize %s", qPrintable(QString::number(individualSize)));
 
-
     emulateScanning = settings.value("emularScanning").toBool();
+
+    useSmartIndividual = settings.value("usarIndividuosInteligentes").toBool();
 
     // base de datos sqlite
     //QString database("test_18.1.db");
@@ -206,8 +207,14 @@ void MainWindow::executeAlgorithm()
     */
 
     // inicializar poblacion de tamano P
-    //simulation->initializePopulation();
-    simulation->initializeSmartPopulation();
+    if (useSmartIndividual)
+    {
+        simulation->initializeSmartPopulation();
+    }
+    else
+    {
+        simulation->initializePopulation();
+    }
 
     // evaluar poblacion inicial
     simulation->evaluateIndividuals();
@@ -1550,4 +1557,9 @@ int MainWindow::getAPs(int channel, int minChannelTime, int maxChannelTime)
 
     //return scanningCampaing->getAPs(channel, minChannelTime, maxChannelTime, random);
     return 1;
+}
+
+bool MainWindow::getUseSmartIndividual()
+{
+    return useSmartIndividual;
 }

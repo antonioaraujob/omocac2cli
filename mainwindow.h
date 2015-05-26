@@ -138,6 +138,13 @@ private:
      */
     static ScanningCampaing * scanningCampaing;
 
+    /**
+     * @brief Especifica si en el proceso de inicializacion de la poblacion se
+     * utiliza una secuencia y temporizadores como condiciones iniciales para los
+     * individuos
+     */
+    bool useSmartIndividual;
+
 public:
 
     /**
@@ -429,6 +436,14 @@ public:
      * @return numero de APs encontrados dados los parametros pasados como argumento
      */
     static int getAPs(int channel, int minChannelTime, int maxChannelTime);
+
+    /**
+     * @brief Retorna si el paramatro del algoritmo de usar individuos inteligentes para
+     * el proceso de inicializar la poblacion esta establecido
+     * @return si se deben usar individuos inteligentes para el proceso de inicializar la poblacion
+     */
+    bool getUseSmartIndividual();
+
 
 };
 
