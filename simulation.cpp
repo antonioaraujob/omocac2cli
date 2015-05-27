@@ -141,7 +141,7 @@ void Simulation::initializeSmartPopulation()
         qDebug("individualId: %d", individuo->getIndividualId());
         populationList.append(individuo);
     }
-
+/*
     // inicializacion de la mita de la poblacion con condiciones inciales
     for (int j = 0; j < populationSize/2; j++)
     {
@@ -150,6 +150,28 @@ void Simulation::initializeSmartPopulation()
         qDebug("individualId: %d", individuo->getIndividualId());
         populationList.append(individuo);
     }
+*/
+    // agregar 3 individuos de 800/11
+    for (int j = 0; j < 3; j++)
+    {
+        individuo = new Individual(true, "1,73,0,2,73,0,3,73,0,4,73,0,5,73,0,6,73,0,7,73,0,8,73,0,9,73,0,10,73,0,11,73,0");
+        populationList.append(individuo);
+    }
+
+    // agregar 3 individuos de 400/11
+    for (int k = 0; k < 3; k++)
+    {
+        individuo = new Individual(true, "1,36,0,2,36,0,3,36,0,4,36,0,5,36,0,6,36,0,7,36,0,8,36,0,9,36,0,10,36,0,11,36,0");
+        populationList.append(individuo);
+    }
+
+    // agregar 3 individuos de 200/11
+    for (int l = 0; l < 4; l++)
+    {
+        individuo = new Individual(true, "1,19,0,2,19,0,3,19,0,4,19,0,5,19,0,6,19,0,7,19,0,8,19,0,9,19,0,10,19,0,11,19,0");
+        populationList.append(individuo);
+    }
+
 
 
     qDebug("tamano de la poblacion: %d",populationList.count());

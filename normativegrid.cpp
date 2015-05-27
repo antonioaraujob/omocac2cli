@@ -168,7 +168,7 @@ void NormativeGrid::buildSubintervalsF1(NormativePhenotypicPart *nPhenotypicPart
     double u = 0;
 
     //qDebug("   %f",nPhenotypicPart->getLowerF1());
-    for (int i = 1; i <= 10; i++)
+    for (int i = 1; i <= getSubIntervalNumber(); i++)
     {
         u = nPhenotypicPart->getLowerF1()+widthF1*i;
         //qDebug("%f - %f", l, u);
@@ -190,7 +190,7 @@ void NormativeGrid::buildSubintervalsF2(NormativePhenotypicPart * nPhenotypicPar
     double u = 0;
 
     //qDebug("   %f",nPhenotypicPart->getLowerF2());
-    for (int i = 1; i <= 10; i++)
+    for (int i = 1; i <= getSubIntervalNumber(); i++)
     {
         u = nPhenotypicPart->getLowerF2()+widthF2*i;
         //qDebug("%f - %f", l, u);

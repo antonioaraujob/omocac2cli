@@ -106,6 +106,15 @@ public:
      */
     Individual(bool smart);
 
+    /**
+     * @brief Constructor de la clase
+     * @param sequence secuencia de scanning de la forma <ch,m,M,ch,m,...ch,m,M>
+     * ch: canal
+     * m: MinChannelTime
+     * M: MaxChannelTime
+     * En total la secuencia deberia tener 33 parametros, 3 por cada posicion de canal
+     */
+    Individual(bool smart, QString sequence);
 
     /**
      * @brief Destructor de la clase

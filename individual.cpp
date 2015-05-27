@@ -4,6 +4,8 @@
 #include "mainwindow.h"
 
 #include <QTime>
+#include <QStringList>
+#include <QString>
 
 #include "scan.h"
 
@@ -187,63 +189,130 @@ void Individual::setSmartParameters()
 
     // secuencia de ios
     // 1,39.02,0,2,39.02,0,3,39.02,0,4,39.02,0,5,39.02,0,6,39.02,0,7,39.02,0,8,39.02,0,9,39.02,0,10,39.02,0,11,39.02,0
+
+    // secuencia de ios considerando la distribucion de proporcion de AP
+    // 1,9,0,2,0,0,3,0,0,4,0,0,5,0,0,6,12,0,7,1,0,8,0,0,9,0,0,10,0,0,11,12,0
+
     parametersList.append(1);
-    parametersList.append(39);
+    parametersList.append(9);
     parametersList.append(0);
-    apsFound = scan.getAPs(1, 39, 0);
+    apsFound = scan.getAPs(1, 9, 0);
     parametersList.append(apsFound);
     parametersList.append(2);
-    parametersList.append(39);
     parametersList.append(0);
-    apsFound = scan.getAPs(2, 39, 0);
+    parametersList.append(0);
+    apsFound = scan.getAPs(2, 0, 0);
     parametersList.append(apsFound);
     parametersList.append(3);
-    parametersList.append(39);
     parametersList.append(0);
-    apsFound = scan.getAPs(3, 39, 0);
+    parametersList.append(0);
+    apsFound = scan.getAPs(3, 0, 0);
     parametersList.append(apsFound);
     parametersList.append(4);
-    parametersList.append(39);
     parametersList.append(0);
-    apsFound = scan.getAPs(4, 39, 0);
+    parametersList.append(0);
+    apsFound = scan.getAPs(4, 0, 0);
     parametersList.append(apsFound);
     parametersList.append(5);
-    parametersList.append(39);
     parametersList.append(0);
-    apsFound = scan.getAPs(5, 39, 0);
+    parametersList.append(0);
+    apsFound = scan.getAPs(5, 0, 0);
     parametersList.append(apsFound);
     parametersList.append(6);
-    parametersList.append(39);
+    parametersList.append(12);
     parametersList.append(0);
-    apsFound = scan.getAPs(6, 39, 0);
+    apsFound = scan.getAPs(6, 12, 0);
     parametersList.append(apsFound);
     parametersList.append(7);
-    parametersList.append(39);
+    parametersList.append(1);
     parametersList.append(0);
-    apsFound = scan.getAPs(7, 39, 0);
+    apsFound = scan.getAPs(7, 1, 0);
     parametersList.append(apsFound);
     parametersList.append(8);
-    parametersList.append(39);
     parametersList.append(0);
-    apsFound = scan.getAPs(8, 39, 0);
+    parametersList.append(0);
+    apsFound = scan.getAPs(8, 0, 0);
     parametersList.append(apsFound);
     parametersList.append(9);
-    parametersList.append(39);
     parametersList.append(0);
-    apsFound = scan.getAPs(9, 39, 0);
+    parametersList.append(0);
+    apsFound = scan.getAPs(9, 0, 0);
     parametersList.append(apsFound);
     parametersList.append(10);
-    parametersList.append(39);
     parametersList.append(0);
-    apsFound = scan.getAPs(10, 39, 0);
+    parametersList.append(0);
+    apsFound = scan.getAPs(10, 0, 0);
     parametersList.append(apsFound);
     parametersList.append(11);
-    parametersList.append(39);
+    parametersList.append(12);
     parametersList.append(0);
-    apsFound = scan.getAPs(11, 39, 0);
+    apsFound = scan.getAPs(11, 12, 0);
     parametersList.append(apsFound);
 }
 
+Individual::Individual(bool smart, QString sequence)
+{
+    // asignar el valor unico del identificador del individuo
+    individualId = Simulation::getNewindividualId();
+
+    // asignar el tamano del individuo
+    individualSize = MainWindow::getIndividualSize();
+    //qDebug("Individual.cpp: individualSize = %s", qPrintable(QString::number(individualSize)));
+
+    emulateScanning = MainWindow::getEmulateScanning();
+
+    // asignar un valor de nscan entre 1 y 8
+    nscansForMutation = qrand() % ((8 + 1) - 1) + 1;
+
+    // inicializar el contador de torneos ganados en 0
+    wonMatchesCounter = 0;
+
+    // se deben crear los 33 parametros
+    // C1,Min1,Max1,AP1,C2,Min2,Max2,AP2,...,C11,Min11,Max11,AP11
+
+
+    // base de datos sqlite
+    QString database("database.db");
+
+    // tipo de experimento para extraer las muestras: full -> full scanning
+    QString experiment("full");
+
+    //Scan scan(database.toStdString(),experiment.toStdString());
+    ScanningCampaing scan(database.toStdString(),experiment.toStdString());
+
+    scan.init();
+    scan.prepareIRD();
+
+    QStringList tmpList;
+    tmpList = sequence.split(",");
+
+    int ch = 0;
+    int min = 0;
+    int max = 0;
+    int apsFound = 0;
+
+    for (int i=0; i<individualSize; i++)
+    {
+        ch = tmpList.at(i*3).toDouble();
+        min = tmpList.at(i*3+1).toDouble();
+        max = tmpList.at(i*3+2).toDouble();
+
+        parametersList.append(ch);
+        parametersList.append(min);
+        parametersList.append(max);
+
+        apsFound = scan.getAPs(ch, min, max);
+
+        parametersList.append(apsFound);
+    }
+
+
+    // calcular el valor de desempeno para la descubierta
+    calculateDiscoveryValue();
+
+    // calcular el valor de desempeno para la latencia
+    calculateLatencyValue();
+}
 
 Individual::Individual(Individual &p)
 {
