@@ -1,4 +1,5 @@
 #include "selection.h"
+#include <cmath>
 
 
 
@@ -91,7 +92,11 @@ void Selection::doSelection(QList<Individual *> population2p, int matches, Norma
             adversaryList.append(adversary);
         }
         // ejecutar los torneos del individuo contra los adversarios
-        makeTournaments(i, selectedIndividual, adversaryList, nGrid);
+        //makeTournaments(i, selectedIndividual, adversaryList, nGrid);
+
+        // ejecutar los torneos del invidivuo contra los adversarios y las reglas nuevas
+        makeTournamentsWithNewRules(i, selectedIndividual, adversaryList, nGrid);
+
 
         // incrementar el valor de i
         i++;
@@ -339,6 +344,63 @@ void Selection::makeTournaments(int individualIndex, Individual * individual, QL
     tournamentsWinners.insert(individualIndex, victoriesCount);
 }
 */
+
+
+void Selection::makeTournamentsWithNewRules(int individualIndex, Individual * individual, QList<Individual *> adversaryList,
+                     NormativeGrid *nGrid)
+{
+    Individual * adversary;
+
+    for (int i=0; i<adversaryList.count(); i++)
+    {
+        adversary = adversaryList.at(i);
+
+        qDebug("encuentro entre:");
+        individual->printIndividual();
+        adversary->printIndividual();
+        qDebug(" ");
+
+        // verificar condiciones:
+        //
+        // 1) si |Fo1_1 - Fo_1_2| <= 0.1 gana el individuo que tenga menos latencia
+        double difference = std::abs(individual->getPerformanceDiscovery() - adversary->getPerformanceDiscovery());
+        if (difference <= 0.1)
+        {
+            if (individual->getPerformanceLatency() < adversary->getPerformanceLatency())
+            {
+                individual->incrementWonMatchesCounter();
+            }else
+            {
+                adversary->incrementWonMatchesCounter();
+            }
+        }else // si |Fo1_1 - Fo_1_2| > 0.1
+        {
+            double latencyDifference = std::abs(individual->getPerformanceLatency() - adversary->getPerformanceLatency());
+            if (latencyDifference <= 200)
+            {
+                if (individual->getPerformanceDiscovery() > adversary->getPerformanceDiscovery())
+                {
+                    individual->incrementWonMatchesCounter();
+                }else
+                {
+                    adversary->incrementWonMatchesCounter();
+                }
+            }else
+            {
+                if (individual->getPerformanceLatency() < adversary->getPerformanceLatency())
+                {
+                    individual->incrementWonMatchesCounter();
+                }else
+                {
+                    adversary->incrementWonMatchesCounter();
+                }
+            }
+        }
+    } // fin del for de recorrido de la lista de adversarios
+}
+
+
+
 
 bool Selection::individualDominate(Individual * xj, Individual * xi)
 {

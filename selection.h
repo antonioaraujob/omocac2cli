@@ -85,6 +85,27 @@ public:
                          NormativeGrid *nGrid);
 
     /**
+     * @brief Ejecuta el proceso de torneo entre el individuo y los adversarios de la lista
+     * de adversario de acuerdo a las siguientes reglas:
+     *
+     * si | Fo1_1 - Fo1_2 | <= 0.1 entonces gana el individuo que tenga la menor latencia.
+     *   en caso contrario | Fo1_1 - Fo1_2 | > 0.1
+     *      calcular la diferencia de la latencia | L1 -L2 |
+     *          si la diferencia < 200ms entonces
+     *              gana el individuo con mayor descubierta (Fo1)
+     *          en caso contrario
+     *              gana el individuo con menor latencia
+     *
+     *
+     * @param individualIndex
+     * @param individual
+     * @param adversaryList
+     * @param nGrid
+     */
+    void makeTournamentsWithNewRules(int individualIndex, Individual * individual, QList<Individual *> adversaryList,
+                         NormativeGrid *nGrid);
+
+    /**
      * Retorna si el individuo xj domina al individuo xi
      * @param xj Individuo 1
      * @param xi Individuo 2

@@ -24,7 +24,8 @@ Individual::Individual(int numberOfApsDeployed)
     emulateScanning = MainWindow::getEmulateScanning();
 
     // asignar un valor de nscan entre 1 y 8
-    nscansForMutation = qrand() % ((8 + 1) - 1) + 1;
+    //nscansForMutation = qrand() % ((8 + 1) - 1) + 1;
+    nscansForMutation = 1;
 
     // se deben crear los 33 parametros
     // C1,Min1,Max1,AP1,C2,Min2,Max2,AP2,...,C11,Min11,Max11,AP11
@@ -388,8 +389,8 @@ double Individual::getRandomMinChannelTime()
     // el rango es 3 <= MinChannelTime <= 12 en ms
 
     // se esta restringiendo el hecho de que el MinChannelTime sea 3
-    int low = 3;
-    int high = 12;
+    int low = 5;
+    int high = 15;
     return qrand() % ((high + 1) - low) + low;
 }
 
@@ -398,7 +399,7 @@ double Individual::getRandomMaxChannelTime()
 
     // el rango es 10 <= MaxChannelTime <= 150
     int low = 10;
-    int high = 150;
+    int high = 90;
     return qrand() % ((high + 1) - low) + low;
 }
 
@@ -662,11 +663,25 @@ void Individual::calculateDiscoveryValue()
 
     if (getEmulateScanning())
     {
+        /*
         // suma de los valores de AP por canal
         for (int i=0; i<individualSize; i++)
         {
             discovery = discovery + parametersList.at((i*4)+3);
         }
+        */
+
+        // ********************************************************************************************************
+        // codigo para probar funcion objetivo = ((Suma AP_i)/minchannel_i)*0.20 + ((Suma AP_i)/maxchannel_i)*0.80
+
+        for (int i=0; i<individualSize; i++)
+        {
+            discovery = ( (parametersList.at((i*4)+3))/(parametersList.at((i*4)+1)) )*0.20 + ( (parametersList.at((i*4)+3))/(parametersList.at((i*4)+2)) )*0.80;
+        }
+        qDebug("discovery");
+
+        // ********************************************************************************************************
+
     }
     else
     {
@@ -689,6 +704,7 @@ void Individual::calculateDiscoveryValue()
     }
 
     performanceDiscovery = discovery;
+    qDebug("performanceDiscovery: ");
 
 }
 
@@ -1022,5 +1038,6 @@ int Individual::getNscanForMutation()
 
 void Individual::setNewNscansForMutation()
 {
-    nscansForMutation = qrand() % ((8 + 1) - 1) + 1;
+    //nscansForMutation = qrand() % ((8 + 1) - 1) + 1;
+    nscansForMutation = 1;
 }
